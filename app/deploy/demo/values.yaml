@@ -1,0 +1,41 @@
+# Default values for demo.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+appName: demoapp
+namespace: demo
+
+# Deployment specification
+selectorLabels:
+  app.kubernetes.io/name: demoapp
+
+replicaCount: 3
+
+image:
+  repository: 388367130506.dkr.ecr.us-west-2.amazonaws.com/demoapp
+  tag: latest
+  pullPolicy: Always
+
+containerPort: 80
+
+# Service specification
+service:
+  type: NodePort
+  port: 80
+
+# Ingress specification
+ingress:
+  enabled: false
+  className: alb
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+  hosts:
+    - host: demoapp.local
+      paths:
+        - path: /api
+          pathType: Prefix
+  tls: []
+
+autoscaling:
+  enabled: false
