@@ -10,6 +10,10 @@ variable "availability_zones" {
   type = list(string)
 }
 
+variable "public_network" {
+  type = bool
+}
+
 variable "subnet_range" {
   type = number
 }

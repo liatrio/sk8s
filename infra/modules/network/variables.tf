@@ -2,6 +2,10 @@ variable "network_name" {
   type = string
 }
 
+variable "public_network" {
+  type = bool
+}
+
 variable "cidr_block" {
   type = string
 }

@@ -1,19 +1,21 @@
-network_name        = "demonet"
+network_name        = "odinet"
 
-cidr_block          = "172.27.0.0/16"
-subnet_range        = 20
+public_network     = true
+
+cidr_block          = "172.27.0.0/24"
+subnet_range        = 27
 
 availability_zones  = [
-    "us-west-2a",
-    "us-west-2b",
-    "us-west-2c"
+    "us-east-1a",
+    "us-east-1b",
+    "us-east-1c"
 ]
 
-cluster_name        = "democluster"
-namespace           = "demo"
+cluster_name        = "odin-cluster"
+namespace           = "odin-core"
 
-app_name            = "demoapp"
+app_name            = "odinapp"
 
 tags                = {
-    "Environment" = "demo"
+    "Environment" = "Odin"
 }

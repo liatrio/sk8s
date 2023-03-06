@@ -1,33 +1,40 @@
 resource "aws_vpc" "self" {
-  cidr_block  = var.cidr_block
+  cidr_block           = var.cidr_block
+  enable_dns_support   = true
+  enable_dns_hostnames = true
   tags        = merge({
     "Name" = var.network_name
   }, var.tags)
 }
 
 resource "aws_internet_gateway" "self" {
+  count   = var.public_network ? 1 : 0
   vpc_id  = aws_vpc.self.id
   tags    = merge({
     "Name" = "${var.network_name}-main"
   }, var.tags)
 }
 
-resource "aws_route_table" "public" {
-  vpc_id  = aws_vpc.self.id
-  tags    = merge({
+resource "aws_default_route_table" "public" {
+  default_route_table_id = aws_vpc.self.default_route_table_id
+  tags                   = merge({
     "Name" = "${var.network_name}-public-routes"
   }, var.tags)
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.self.id
+  dynamic "route" {
+    for_each = var.public_network ? [1] : []
+
+    content {
+      cidr_block = "0.0.0.0/0"
+      gateway_id = aws_internet_gateway.self.0.id
+    }
   }
 }
 
 # Public IPs
 
 resource "aws_eip" "self" {
-  count = length(var.availability_zones)
+  count = (var.public_network ? 1 : 0) * length(var.availability_zones)
   vpc   = true
 
   depends_on = [aws_internet_gateway.self]
@@ -36,10 +43,10 @@ resource "aws_eip" "self" {
 # Public subnets and routing
 
 resource "aws_subnet" "public" {
-  count             = length(var.availability_zones)
+  count             = (var.public_network ? 1 : 0) * length(var.availability_zones)
   vpc_id            = aws_vpc.self.id
   availability_zone = var.availability_zones[count.index]
-  cidr_block        = local.subnet_ips[count.index]
+  cidr_block        = local.subnet_ips[length(var.availability_zones) + count.index]
   tags              = merge({
     "Name" = "${var.network_name}-public-subnet-${var.availability_zones[count.index]}"
   },
@@ -50,7 +57,7 @@ resource "aws_subnet" "public" {
 }
 
 resource "aws_nat_gateway" "self" {
-  count         = length(var.availability_zones)
+  count         = (var.public_network ? 1 : 0) * length(var.availability_zones)
   allocation_id = aws_eip.self[count.index].id
   subnet_id     = aws_subnet.public[count.index].id
   tags          = merge({
@@ -59,9 +66,9 @@ resource "aws_nat_gateway" "self" {
 }
 
 resource "aws_route_table_association" "public" {
-  count           = length(var.availability_zones)
+  count           = (var.public_network ? 1 : 0) * length(var.availability_zones)
   subnet_id       = aws_subnet.public[count.index].id
-  route_table_id  = aws_route_table.public.id
+  route_table_id  = aws_default_route_table.public.id
 }
 
 # Private subnets and routing
@@ -70,7 +77,7 @@ resource "aws_subnet" "private" {
   count             = length(var.availability_zones)
   vpc_id            = aws_vpc.self.id
   availability_zone = var.availability_zones[count.index]
-  cidr_block        = local.subnet_ips[length(var.availability_zones) + count.index]
+  cidr_block        = local.subnet_ips[count.index]
   tags              = merge({
     "Name" = "${var.network_name}-private-subnet-${var.availability_zones[count.index]}"
   },
@@ -81,15 +88,19 @@ resource "aws_subnet" "private" {
 }
 
 resource "aws_route_table" "private" {
-  count   = length(var.availability_zones)
+  count   = (var.public_network ? 1 : 0) * length(var.availability_zones)
   vpc_id  = aws_vpc.self.id
   tags    = merge({
     "Name" = "${var.network_name}-private-routes"
   }, var.tags)
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_nat_gateway.self[count.index].id
+  dynamic "route" {
+    for_each = var.public_network ? [1] : []
+
+    content {
+      cidr_block = "0.0.0.0/0"
+      gateway_id = aws_nat_gateway.self[count.index].id
+    }
   }
 }
 
@@ -107,7 +118,7 @@ resource "aws_security_group" "self" {
     "Name" = "${var.network_name}-firewall"
   }, var.tags)
 
-  # we don't need to specify separate ingress rules for our web app running
+  # we don't need to specify separate ingress rules for a web app running
   # on Fargate as the ALB ingress controller does all of that work for us
   ingress {
     from_port = 0
