@@ -11,15 +11,6 @@ module "network" {
   tags                = var.tags
 }
 
-# TODO: implement AWS Client VPN module
-
-# module "registry" {
-#  source  = "./modules/registry"
-#
-#  name    = var.app_name
-#  tags    = var.tags
-# }
-
 module "eks" {
   source             = "./modules/eks"
 
