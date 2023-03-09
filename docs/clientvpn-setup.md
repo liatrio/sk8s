@@ -18,5 +18,6 @@ For setting up the Client VPN to be used to connect to the EKS cluster we can us
 
 ## Connecting using Client VPN using the AWS provided client
 1. For this step we need to download and install the [AWS Client VPN](https://aws.amazon.com/vpn/client-vpn-download/).
-2. Make a new VPN profile. 
-    -  Documentation on setting up a [new profile](https://docs.aws.amazon.com/vpn/latest/clientvpn-user/connect-aws-client-vpn-connect.html) for your OS version of the AWS client. 
+2. Add the Destination VPC to the security group for the EKS cluster.
+3. Make a new VPN profile. 
+    -  Documentation on setting up a [new profile](https://docs.aws.amazon.com/vpn/latest/clientvpn-user/connect-aws-client-vpn-connect.html) for your OS version of the AWS client.
