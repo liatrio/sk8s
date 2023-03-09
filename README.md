@@ -12,7 +12,7 @@ Instructions for creating a Client VPN in AWS for testing can be found [here](do
 
 ## Installing ARC
 
-Instructions for installing the GitHub Actions Runner Controller on EKS can be found [here](docs/arc-setup.md).
+Instructions for installing the GitHub Actions Runner Controller on EKS can be found [here](docs/deployment.md).
 
 ## Pre-requisites
 * AWS credentials to authenticate the [terraform provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#provider-configuration)
