@@ -10,10 +10,6 @@ variable "availability_zones" {
   type = list(string)
 }
 
-variable "public_network" {
-  type = bool
-}
-
 variable "subnet_range" {
   type = number
 }
@@ -22,11 +18,15 @@ variable "cluster_name" {
   type = string
 }
 
-variable "namespace" {
-  type = string
+variable "instance_type" {
+  type    = string
 }
 
-variable "app_name" {
+variable "disk_size" {
+  type        = number
+}
+
+variable "namespace" {
   type = string
 }
 

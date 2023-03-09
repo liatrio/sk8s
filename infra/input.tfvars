@@ -1,9 +1,9 @@
-network_name        = "odinet"
+network_name        = ""
 
-public_network     = true
-
-cidr_block          = "172.27.0.0/24"
-subnet_range        = 27
+// The subnet range must generate at least twice the number of subnets as the number of availability zones specified.
+// So, for 3 AZs, we need 6 subnets (3 public + 3 private).
+cidr_block          = "172.27.0.0/25"
+subnet_range        = 28
 
 availability_zones  = [
     "us-east-1a",
@@ -11,11 +11,14 @@ availability_zones  = [
     "us-east-1c"
 ]
 
-cluster_name        = "odin-cluster"
-namespace           = "odin-core"
+cluster_name        = ""
+namespace           = ""
 
-app_name            = "odinapp"
+instance_type       = "t3.medium"
+disk_size           = 20
 
+// The Project tag is required; we use it to generate unique IAM roles for the EKS cluster being created.
 tags                = {
-    "Environment" = "Odin"
+  "Project"     = ""
+  "Environment" = ""
 }
