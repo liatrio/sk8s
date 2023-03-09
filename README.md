@@ -1,10 +1,18 @@
 # sk8s
 
-Deploy a simple Kubernetes cluster in a greenfield AWS environment with Terraform. The default configuration creates a VPC with public and private subnets spread across the specified Availability Zones. Egress traffic to the internet is permitted in order to pull down app images, but the EKS cluster and its worker nodes are only accessible from within the VPC. Both Fargate and managed node groups are suported. Because the EKS cluster's API server endpoint is private, you need to have a client or site-to-site VPN connection set up 
+Deploy a simple Kubernetes cluster in a greenfield AWS environment with Terraform. The default configuration creates a VPC with public and private subnets spread across the specified Availability Zones. Egress traffic to the internet is permitted in order to pull down app images, but the EKS cluster and its worker nodes are only accessible from within the VPC. Both Fargate and managed node groups are suported. Because the EKS cluster's API server endpoint is private, you need to have a client or site-to-site VPN connection set up.
 
 In addition to the resources depicted in the following architecture diagram, the Terraform plan also creates a set of IAM roles for letting EKS manage worker nodes and other resources on your behalf, along with route tables for managing network traffic.
 
-<!-- ![SK8s Architecture](imgs/k8s_arch.png) -->
+![SK8s Architecture](imgs/k8s_arch.jpeg)
+
+## Creating a Client VPN
+
+Instructions for creating a Client VPN in AWS for testing can be found [here](docs/clientvpn-setup.md).
+
+## Installing ARC
+
+Instructions for installing the GitHub Actions Runner Controller on EKS can be found [here](docs/deployment.md).
 
 ## Pre-requisites
 * AWS credentials to authenticate the [terraform provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#provider-configuration)
