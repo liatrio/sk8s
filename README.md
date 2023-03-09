@@ -4,7 +4,7 @@ Deploy a simple Kubernetes cluster in a greenfield AWS environment with Terrafor
 
 In addition to the resources depicted in the following architecture diagram, the Terraform plan also creates a set of IAM roles for letting EKS manage worker nodes and other resources on your behalf, along with route tables for managing network traffic.
 
-<!-- ![SK8s Architecture](imgs/k8s_arch.jpeg) -->
+![SK8s Architecture](imgs/k8s_arch.jpeg)
 
 ## Creating a Client VPN
 
