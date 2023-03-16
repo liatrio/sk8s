@@ -1,0 +1,48 @@
+apiVersion: actions.summerwind.dev/v1alpha1
+kind: RunnerDeployment
+metadata:
+  name: init-runners
+  namespace: actions-runner-system
+spec:
+  template:
+    spec:
+      repository: liatrio-enterprise/codeql-examples
+      labels:
+        - codeql
+        - dependabot
+      containers:
+      - name: runner
+        resources:
+          limits:
+            cpu: "1.0"
+            memory: "2Gi"
+          requests:
+            cpu: "0.5"
+            memory: "1Gi"
+      - name: docker
+        resources:
+          limits:
+            cpu: "1.0"
+            memory: "2Gi"
+          requests:
+            cpu: "0.5"
+            memory: "1Gi"
+---
+apiVersion: actions.summerwind.dev/v1alpha1
+kind: HorizontalRunnerAutoscaler
+metadata:
+  name: init-runners-autoscaler
+  namespace: actions-runner-system
+spec:
+  scaleDownDelaySecondsAfterScaleOut: 300
+  scaleTargetRef:
+    kind: RunnerDeployment
+    name: init-runners
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: PercentageRunnersBusy
+      scaleUpThreshold: "0.75"
+      scaleDownThreshold: "0.25"
+      scaleUpFactor: "2"
+      scaleDownFactor: "0.5"

@@ -114,6 +114,68 @@ resource "aws_eks_node_group" "self" {
 }
 
 /*
+ * The OICD provider is required to grant IAM permissions allowing the EKS cluster to autoscale, and to deploy the ALB
+ * ingress controller for ingress-based load balancing when using Fargate.
+ */
+data "tls_certificate" "self" {
+  url = aws_eks_cluster.self.identity.0.oidc.0.issuer
+}
+
+resource "aws_iam_openid_connect_provider" "self" {
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = [data.tls_certificate.self.certificates.0.sha1_fingerprint]
+  url             = aws_eks_cluster.self.identity.0.oidc.0.issuer
+}
+
+data "aws_iam_policy_document" "autoscaler" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+    effect  = "Allow"
+
+    condition {
+      test     = "StringEquals"
+      variable = "${replace(aws_iam_openid_connect_provider.self.url, "https://", "")}:sub"
+      values   = ["system:serviceaccount:kube-system:cluster-autoscaler"]
+    }
+
+    principals {
+      identifiers = [aws_iam_openid_connect_provider.self.arn]
+      type        = "Federated"
+    }
+  }
+}
+
+resource "aws_iam_policy" "autoscaler" {
+  name = "${var.tags["Project"]}EKSClusterAutoscalerIAMPolicy"
+  policy = jsonencode({
+    Statement = [{
+      Action    = [
+        "autoscaling:DescribeAutoScalingInstances",
+        "autoscaling:TerminateInstanceInAutoScalingGroup",
+        "autoscaling:DescribeAutoScalingGroups",
+        "autoscaling:DescribeLaunchConfigurations",
+        "autoscaling:DescribeTags",
+        "autoscaling:SetDesiredCapacity",
+        "ec2:DescribeLaunchTemplateVersions"
+      ]
+      Effect    = "Allow"
+      Resource  = "*"
+    }]
+    Version = "2012-10-17"
+  })
+}
+
+resource "aws_iam_role" "autoscaler" {
+  assume_role_policy = data.aws_iam_policy_document.autoscaler.json
+  name               = "${var.tags["Project"]}EKSClusterAutoscalerServiceAccountRole"
+}
+
+resource "aws_iam_role_policy_attachment" "autoscaler" {
+  policy_arn = aws_iam_policy.autoscaler.arn
+  role       = aws_iam_role.autoscaler.id
+}
+
+/*
  * Everything below this comment block strictly applies to EKS clusters that use Fargate.
  */
 
@@ -167,20 +229,6 @@ resource "aws_iam_role_policy_attachment" "eks_pod_execution_policy" {
   role       = aws_iam_role.eks_pod_execution_role.0.name
 }
 
-/*
- * The OICD provider is required to grant IAM permissions to a Fargate pod, and is used to deploy the ALB ingress
- * controller for ingress-based load balancing.
- */
-data "tls_certificate" "self" {
-  url = aws_eks_cluster.self.identity.0.oidc.0.issuer
-}
-
-resource "aws_iam_openid_connect_provider" "self" {
-  client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = [data.tls_certificate.self.certificates.0.sha1_fingerprint]
-  url             = aws_eks_cluster.self.identity.0.oidc.0.issuer
-}
-
 data "aws_iam_policy_document" "alb" {
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]
@@ -201,7 +249,7 @@ data "aws_iam_policy_document" "alb" {
 
 resource "aws_iam_policy" "alb" {
   name    = "${var.tags["Project"]}AWSLoadBalancerControllerIAMPolicy"
-  policy  = file("${path.module}/iam_policy.json")
+  policy  = file("${path.module}/iam_policies/ingress_controller_policy.json")
 }
 
 resource "aws_iam_role" "alb" {
