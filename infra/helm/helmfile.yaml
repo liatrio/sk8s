@@ -1,0 +1,11 @@
+repositories:
+  - name: cert-manager
+    url: https://charts.jetstack.io
+
+  - name: autoscaler
+    url: https://kubernetes.github.io/autoscaler
+
+  - name: actions-runner-controller
+    url: https://actions-runner-controller.github.io/actions-runner-controller
+  
+  # Our Helm chart for deploying GitHub Actions runners will go here

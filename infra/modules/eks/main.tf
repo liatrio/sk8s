@@ -154,8 +154,8 @@ resource "aws_iam_policy" "autoscaler" {
         "autoscaling:TerminateInstanceInAutoScalingGroup",
         "autoscaling:DescribeAutoScalingGroups",
         "autoscaling:DescribeLaunchConfigurations",
-        "autoscaling:DescribeTags",
         "autoscaling:SetDesiredCapacity",
+        "autoscaling:DescribeTags",
         "ec2:DescribeLaunchTemplateVersions"
       ]
       Effect    = "Allow"
