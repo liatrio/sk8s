@@ -9,3 +9,31 @@ repositories:
     url: https://actions-runner-controller.github.io/actions-runner-controller
   
   # Our Helm chart for deploying GitHub Actions runners will go here
+
+releases:
+  - name: cert-manager
+    namespace: cert-manager
+    createNamespace: true
+    chart: jetstack/cert-manager
+    version: v1.11.0
+
+  - name: autoscaler
+    namespace: kube-system
+    chart: autoscaler/cluster-autoscaler
+    version: 9.26.0
+    set:
+      - name: autoDiscovery.clusterName
+        value: ""
+
+  - name: actions-runner-controller
+    namespace: actions-runners
+    createNamespace: true
+    chart: actions-runner-controller/actions-runner-controller
+    version: 0.22.0
+    set:
+      - name: authSecret.github_app_id
+        value: {{ requiredEnv "GITHUB_APP_ID" }}
+      - name: authSecret.github_app_installation_id
+        value: {{ requiredEnv "GITHUB_APP_INSTALLATION_ID" }}
+      - name: authSecret.github_app_private_key
+        value: {{ requiredEnv "GITHUB_APP_PRIVATE_KEY" }}
