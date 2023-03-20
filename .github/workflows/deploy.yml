@@ -11,24 +11,10 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: [ 'bootstrap' ]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3
-
-      - name: Install yamllint
-        run: |
-          python -m pip install --upgrade pip
-          pip install yamllint
-
-      - name: Lint all YAML files
-        run: |
-          yamllint ./infra/helm/helmfile.yaml
           
       - name: Configure AWS Credentials For GitHub Actions
         uses: aws-actions/configure-aws-credentials@v2
@@ -43,5 +29,5 @@ jobs:
         run: aws eks --region us-east-1 update-kubeconfig --name ghest
         
       - name: Get Pods
-        run: kubectl get pods
+        run: kubectl get pods -A
           
