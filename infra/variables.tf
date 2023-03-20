@@ -19,11 +19,11 @@ variable "cluster_name" {
 }
 
 variable "instance_type" {
-  type    = string
+  type = string
 }
 
 variable "disk_size" {
-  type        = number
+  type = number
 }
 
 variable "namespace" {
