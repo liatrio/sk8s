@@ -2,7 +2,7 @@ repositories:
   - name: autoscaler
     url: https://kubernetes.github.io/autoscaler
 
-  - name: cert-manager
+  - name: jetstack
     url: https://charts.jetstack.io
 
   - name: actions-runner-controller
