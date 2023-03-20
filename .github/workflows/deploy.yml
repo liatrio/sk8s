@@ -43,5 +43,5 @@ jobs:
         run: aws eks --region us-east-1 update-kubeconfig --name ghest
         
       - name: Get Pods
-        run: kubectl get pods
+        run: kubectl get pods -A
           
