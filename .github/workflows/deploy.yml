@@ -30,6 +30,5 @@ jobs:
     
         
       - name: Helmfile Apply
-        run: helmfile init --force && helmfile repos && helmfile apply --set authSecret.github_app_id=${{ secrets.APP_ID }} --set authSecret.github_app_installation_id=${{ secrets.INSTALLATION_ID }} --set authSecret.github_app_private_key=${{ secrets.APP_PRIVATE_KEY }}
+        run: helmfile init --force && helmfile repos && helmfile apply --set=authSecret.github_token=${{ secrets.PAT }}
         working-directory: infra/helm/
-
