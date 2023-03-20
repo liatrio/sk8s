@@ -29,12 +29,16 @@ jobs:
       - name: Lint all YAML files
         run: |
           yamllint .
-
-      - name: Deploy to EKS
-        uses: aws-actions/amazon-eks-deploy-kubernetes-manifest@v1
+          
+      - name: Configure AWS Credentials For GitHub Actions
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          cluster-name: ${{ secrets.CLUSTER_NAME }}
-          manifest: ${{ secrets.MANIFEST }}
+          aws-region: us-east-1
+          # AWS Access Key ID. This input is required if running in the GitHub hosted environment. It is optional if running in a self-hosted environment that already has AWS credentials, for example on an EC2 instance.
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          # AWS Secret Access Key. This input is required if running in the GitHub hosted environment. It is optional if running in a self-hosted environment that already has AWS credentials, for example on an EC2 instance.
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: cluster validation
+        run: aws eks --region us-east-1 update-kubeconfig --name ghest
+          
