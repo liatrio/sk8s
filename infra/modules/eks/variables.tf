@@ -57,10 +57,15 @@ data "aws_subnet" "private" {
   id = var.private_subnets[0]
 }
 
+data "aws_ec2_instance_type" "self" {
+  instance_type = var.instance_type
+}
+
 locals {
-  subnets   = concat(var.private_subnets, var.public_subnets)
-  prefix    = tonumber(split("/", data.aws_subnet.private.cidr_block)[1])
+  subnets       = concat(var.private_subnets, var.public_subnets)
+  available_ips = data.aws_ec2_instance_type.self.maximum_network_interfaces * data.aws_ec2_instance_type.self.maximum_ipv4_addresses_per_network_interface
+  prefix        = tonumber(split("/", data.aws_subnet.private.cidr_block)[1])
   // The desired node count is the same as min_nodes; each private subnet initially hosts a single worker node.
-  min_nodes = length(var.private_subnets)
-  max_nodes = length(var.private_subnets) * (pow(2, 32 - local.prefix) - 6)
+  min_nodes     = length(var.private_subnets)
+  max_nodes     = length(var.private_subnets) * (pow(2, 32 - local.prefix) - 6) / local.available_ips
 }

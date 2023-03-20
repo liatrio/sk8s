@@ -7,8 +7,6 @@ repositories:
 
   - name: actions-runner-controller
     url: https://actions-runner-controller.github.io/actions-runner-controller
-  
-  # Our Helm chart for deploying GitHub Actions runners will go here
 
 releases:
   - name: cert-manager
@@ -22,6 +20,8 @@ releases:
     chart: autoscaler/cluster-autoscaler
     version: 9.26.0
     set:
+      - name: cloudProvider
+        value: aws
       - name: autoDiscovery.clusterName
         value: ""
 
