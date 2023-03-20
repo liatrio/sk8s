@@ -95,10 +95,10 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -var-file input.tfvars
+      run: terraform plan -var-file input.tfvars -out plan.out
       
     - name: Terraform Show
-      run: terraform show -json tfplan.json >> tfplan.json
+      run: terraform show  -no-color -json plan.out > tfplan.json
       
     - name: Terraform Plan Commenter
       uses: liatrio/terraform-change-pr-commenter@v1.4.0
