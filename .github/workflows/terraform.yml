@@ -103,7 +103,7 @@ jobs:
     - name: Terraform Plan Commenter
       uses: liatrio/terraform-change-pr-commenter@v1.4.0
       with:
-        json-file: tfplan.json
+        json-file: ${{ inputs.WORKING_DIR }}/infra/plan.json
         expand-comment: 'true'
         include-plan-job-summary: 'true'
 
