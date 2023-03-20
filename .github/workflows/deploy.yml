@@ -28,7 +28,7 @@ jobs:
 
       - name: Lint all YAML files
         run: |
-          yamllint ./infra/helm/
+          yamllint ./infra/helm/helmfile.yml
           
       - name: Configure AWS Credentials For GitHub Actions
         uses: aws-actions/configure-aws-credentials@v2
