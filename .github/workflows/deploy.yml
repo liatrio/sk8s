@@ -30,6 +30,6 @@ jobs:
     
         
       - name: Helmfile Apply
-        run: helmfile repos && helmfile apply
+        run: helmfile repos && helmfile apply --set authSecret.github_app_id=${{ secrets.APP_ID }} --set authSecret.github_app_installation_id=${{ secrets.INSTALLATION_ID }} --set authSecret.github_app_private_key=${{ secrets.APP_PRIVATE_KEY }}
         working-directory: infra/helm/
           
