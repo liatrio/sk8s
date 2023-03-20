@@ -28,9 +28,6 @@ jobs:
       - name: Set Cluster Context
         run: aws eks --region us-east-1 update-kubeconfig --name ghest
         
-      - name: check IP
-        run: dig -4 TXT +short o-o.myaddr.l.google.com @ns1.google.com
-        
       - name: Get Pods
         run: kubectl get pods -A
           
