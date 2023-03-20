@@ -95,7 +95,7 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan
+      run: terraform plan -input false -var-file input.tfvars
       
     - name: Terraform Show
       run: terraform show -json tfplan.json >> tfplan.json
