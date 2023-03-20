@@ -39,6 +39,9 @@ jobs:
           # AWS Secret Access Key. This input is required if running in the GitHub hosted environment. It is optional if running in a self-hosted environment that already has AWS credentials, for example on an EC2 instance.
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: cluster validation
+      - name: Set Cluster Context
         run: aws eks --region us-east-1 update-kubeconfig --name ghest
+        
+      - name: Get Pods
+        run: kubectl get pods
           
