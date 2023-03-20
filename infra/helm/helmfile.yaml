@@ -23,7 +23,7 @@ releases:
       - name: cloudProvider
         value: aws
       - name: autoDiscovery.clusterName
-        value: ""
+        value: "ghest"
 
   - name: actions-runner-controller
     namespace: actions-runners
@@ -32,8 +32,8 @@ releases:
     version: 0.22.0
     set:
       - name: authSecret.github_app_id
-        value: {{ requiredEnv "GITHUB_APP_ID" }}
+        value: {{requiredEnv "GITHUB_APP_ID"}}
       - name: authSecret.github_app_installation_id
-        value: {{ requiredEnv "GITHUB_APP_INSTALLATION_ID" }}
+        value: {{requiredEnv "GITHUB_APP_INSTALLATION_ID"}}
       - name: authSecret.github_app_private_key
-        value: {{ requiredEnv "GITHUB_APP_PRIVATE_KEY" }}
+        value: {{requiredEnv "GITHUB_APP_PRIVATE_KEY"}}
