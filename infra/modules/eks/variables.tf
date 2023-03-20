@@ -67,5 +67,5 @@ locals {
   prefix        = tonumber(split("/", data.aws_subnet.private.cidr_block)[1])
   // The desired node count is the same as min_nodes; each private subnet initially hosts a single worker node.
   min_nodes     = length(var.private_subnets)
-  max_nodes     = length(var.private_subnets) * (pow(2, 32 - local.prefix) - 6) / local.available_ips
+  max_nodes     = length(var.private_subnets) * (pow(2, 32 - local.prefix) - 6)
 }
