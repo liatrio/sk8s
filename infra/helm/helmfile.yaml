@@ -41,10 +41,10 @@ releases:
       - name: authSecret.create
         value: true
       - name: authSecret.github_app_id
-        value: {{requiredEnv "APP_ID"}}
+        value: ${{ secrets.APP_ID }}
       - name: authSecret.github_app_installation_id
-        value: {{requiredEnv "APP_INSTALLATION_ID"}}
+        value: ${{ secrets.INSTALLATION_ID }}
       - name: authSecret.github_app_private_key
-        value: {{requiredEnv "APP_PRIVATE_KEY"}}
+        value: ${{ secrets.APP_PRIVATE_KEY }}
     needs:
       - cert-manager/cert-manager
