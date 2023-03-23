@@ -11,17 +11,7 @@
     - [Account Access and Credentials](#account-access-and-credentials)
   - [Quickstart Guides](#quickstart-guides)
     - [Local Workstation](#local-workstation)
-      - [Setting up your environment:](#setting-up-your-environment)
-      - [Spinning up the EKS cluster:](#spinning-up-the-eks-cluster)
-      - [Connecting to the cluster:](#connecting-to-the-cluster)
-      - [Deploying services:](#deploying-services)
     - [CI/CD Pipeline](#cicd-pipeline)
-      - [Setting up a GitHub Action Runner on Local Workstation](#setting-up-a-github-action-runner-on-local-workstation)
-      - [Deploying the EKS Cluster from GitHub Actions](#deploying-the-eks-cluster-from-github-actions)
-      - [Setup the AWS VPN Client](#setup-the-aws-vpn-client)
-      - [Deploying the GitHub Actions Runner Controller from GitHub Actions](#deploying-the-github-actions-runner-controller-from-github-actions)
-      - [Cleanup](#cleanup)
-      - [Navigate to the repository dxc-arc-runners](#navigate-to-the-repository-dxc-arc-runners)
   - [AWS Resources](#aws-resources)
 
 ## Overview
