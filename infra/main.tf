@@ -1,5 +1,5 @@
 module "network" {
-  source             = "./modules/network"
+  source = "./modules/network"
 
   network_name       = var.network_name
   cidr_block         = var.cidr_block
@@ -10,7 +10,7 @@ module "network" {
 }
 
 module "eks" {
-  source          = "./modules/eks"
+  source = "./modules/eks"
 
   cluster_name    = var.cluster_name
   is_private      = true
