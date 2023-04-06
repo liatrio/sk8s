@@ -1,0 +1,91 @@
+variable "cluster_name" {
+  type        = string
+  description = "Name of Azure Container Registry."
+
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9]+[a-zA-Z0-9-_]+[a-zA-Z0-9]$", var.cluster_name)) && length(var.cluster_name) <= 50
+    error_message = "Container registry name can only contain alphanumeric characters."
+  }
+}
+
+variable "resource_group_name" {
+  type        = string
+  description = "Name of Azure resource group in which DNS zone resides."
+
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9-_.()]*[a-zA-Z0-9-_()]$", var.resource_group_name)) && length(var.resource_group_name) <= 24
+    error_message = "Resource group name breaks with Azure's naming conventions."
+  }
+}
+
+variable "private_zone_id" {
+  type        = string
+  description = "ID of private DNS zone for looking up container registry private endpoint."
+}
+
+variable "network" {
+  type = object({
+    dns_service_ip       = string
+    docker_bridge_cidr   = string
+    plugin               = string
+    pod_cidr             = optional(string)
+    service_cidr         = string
+    subnet_name          = string
+    virtual_network_name = string
+  })
+}
+
+variable "default_node_pool" {
+  type = object({
+    auto_scaler_profile = object({
+      enabled        = bool
+      expander       = optional(string, "random")
+      max_node_count = optional(number, 3)
+      min_node_count = optional(number, 1)
+    })
+    node_count = optional(number, 3)
+    node_size  = string
+    zones      = optional(list(string))
+  })
+}
+
+variable "node_pools" {
+  type = map(object({
+    auto_scaler_profile = object({
+      enabled        = bool
+      max_node_count = optional(number, 3)
+      min_node_count = optional(number, 1)
+    })
+    node_count = optional(number, 3)
+    node_size  = string
+    priority   = object({
+      spot_enabled = bool
+      spot_price   = optional(number, -1)
+    })
+    subnet_name = optional(string)
+    zones       = optional(list(string))
+  }))
+  default = {}
+}
+
+variable "virtual_nodes" {
+  type = object({
+    enabled     = bool
+    subnet_name = optional(string)
+  })
+  default = {
+    enabled = false
+  }
+}
+
+variable "identity" {
+  type = object({
+    assignment  = string
+    id          = optional(string)
+  })
+}
+
+variable "tags" {
+  type = map(string)
+  default = {}
+}

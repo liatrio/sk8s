@@ -1,5 +1,5 @@
 module "network" {
-  source = "./modules/network"
+  source = "../../modules/aws/network"
 
   network_name       = var.network_name
   cidr_block         = var.cidr_block
@@ -10,13 +10,12 @@ module "network" {
 }
 
 module "eks" {
-  source = "./modules/eks"
+  source = "../../modules/aws/eks"
 
   cluster_name    = var.cluster_name
   is_private      = true
   instance_type   = var.instance_type
   disk_size       = var.disk_size
-  namespace       = var.namespace
   public_subnets  = module.network.public_subnets
   private_subnets = module.network.private_subnets
   use_fargate     = false
