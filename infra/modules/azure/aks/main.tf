@@ -55,7 +55,6 @@ resource "azurerm_kubernetes_cluster" "self" {
   network_profile {
     network_plugin     = var.network.plugin
     network_policy     = var.network.plugin == "azure" ? var.network.plugin : null
-    docker_bridge_cidr = var.network.docker_bridge_cidr
     dns_service_ip     = var.network.dns_service_ip
     pod_cidr           = var.network.plugin == "azure" ? null : var.network.pod_cidr
     service_cidr       = var.network.service_cidr
