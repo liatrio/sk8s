@@ -49,6 +49,7 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -87,7 +88,7 @@ jobs:
         
     - name: Setup Terragrunt
       run: |
-        sudo wget -q -O /bin/terragrunt "https://github.com/gruntwork-io/terragrunt/releases/download/v0.38.4/terragrunt_linux_amd64"
+        sudo wget -q -O /bin/terragrunt "https://github.com/gruntwork-io/terragrunt/releases/download/v0.45.3/terragrunt_darwin_arm64"
         sudo chmod +x /bin/terragrunt
         terragrunt -v
 
