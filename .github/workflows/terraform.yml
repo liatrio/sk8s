@@ -96,6 +96,13 @@ jobs:
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       run: terraform plan -var-file input.tfvars -out plan.out
+      
+    - name: Terraform Show
+      run: terraform show -no-color -json tfplan.plan > tfplan.json
+      
+    - name: Terraform Change PR Commenter
+      uses: liatrio/terraform-change-pr-commenter@v1.4.1
+
 
       # On push to "main", build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
