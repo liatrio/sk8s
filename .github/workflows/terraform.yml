@@ -86,11 +86,11 @@ jobs:
       with:
         terraform_version: 1.3.2
         
-    - name: Setup Terragrunt
-      run: |
-        sudo wget -q -O /bin/terragrunt "https://github.com/gruntwork-io/terragrunt/releases/download/v0.45.3/terragrunt_darwin_arm64"
-        sudo chmod +x /bin/terragrunt
-        terragrunt -v
+#     - name: Setup Terragrunt
+#       run: |
+#         sudo wget -q -O /bin/terragrunt "https://github.com/gruntwork-io/terragrunt/releases/download/v0.45.3/terragrunt_darwin_arm64"
+#         sudo chmod +x /bin/terragrunt
+#         terragrunt -v
 
     # Initialize a new or existing Terragrunt working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terragrunt Init
