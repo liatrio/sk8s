@@ -94,23 +94,29 @@ jobs:
 
     # Initialize a new or existing Terragrunt working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terragrunt Init
+      working-directory: ./infra/live/aws/test
       run: terragrunt init --terragrunt-non-interactive
 
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terragrunt Format
+      working-directory: ./infra/live/aws/test
       run: terragrunt fmt
       
     
 
     # Generates an execution plan for Terraform
     - name: Terragrunt Plan
+      working-directory: ./infra/live/aws/test
       run: terragruntplan -var-file input.tfvars -out plan.out
       
     - name: Terragrunt Show
+      working-directory: ./infra/live/aws/test
       run: terragrunt show -no-color -json tfplan.plan > tfplan.json
       
     - name: Terraform Change PR Commenter
       uses: liatrio/terraform-change-pr-commenter@v1.4.1
+      with:
+        json-file: ./infra/live/aws/test/tfplan.json
 
 
       # On push to "main", build or change infrastructure according to Terraform configuration files
