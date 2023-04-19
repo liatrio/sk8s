@@ -113,10 +113,20 @@ jobs:
     - name: Terraform Change PR Commenter
       uses: liatrio/terraform-change-pr-commenter@v1.4.1
       
-    - name: output plan as pr comment
+    - name: get pr number
+      id: pr_number
       run: |
         pull_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
-        gh pr comment $pull_number --body-file tfplan.json
+        echo "pull_number=$pull_number" >> $GITHUB_OUTPUT
+    - name: output plan as env
+      run: |
+        MY_STRING=$(cat tfplan.json)
+        echo "COMMENT<<EOF" >> $GITHUB_ENV
+        echo "$MY_STRING" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+    - name: comment on pr
+      run: |
+        gh pr comment ${steps.pr_number.outputs.pull_number} --body ${{ env.COMMENT }}
       env: ${{ secrets.GITHUB_TOKEN }}
 
 
