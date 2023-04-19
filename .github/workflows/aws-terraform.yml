@@ -107,11 +107,11 @@ jobs:
     - name: Terragrunt Plan
       run: terragrunt plan -out tfplan.out
       
-    - name: Terragrunt Show
-      run: terragrunt show -no-color -json tfplan.out > tfplan.json
+#     - name: Terragrunt Show
+#       run: terragrunt show -no-color -json tfplan.out > tfplan.json
       
-    - name: Terraform Change PR Commenter
-      uses: liatrio/terraform-change-pr-commenter@v1.4.1
+#     - name: Terraform Change PR Commenter
+#       uses: liatrio/terraform-change-pr-commenter@v1.4.1
       
     - name: get pr number
       id: pr_number
