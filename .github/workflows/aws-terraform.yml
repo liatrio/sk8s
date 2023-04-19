@@ -112,6 +112,11 @@ jobs:
       
     - name: Terraform Change PR Commenter
       uses: liatrio/terraform-change-pr-commenter@v1.4.1
+      
+    - name: output plan as pr comment
+      run: |
+        pull_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+        gh pr comment $pull_number --body-file tfplan.json
 
 
       # On push to "main", build or change infrastructure according to Terraform configuration files
