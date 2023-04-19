@@ -93,7 +93,7 @@ jobs:
 #         terragrunt -v
 
     - name: move to correct workingdir
-      run: cd infra/live/aws/test/
+      run: cd ./live/aws/test/
     # Initialize a new or existing Terragrunt working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terragrunt Init
       run: terragrunt init --terragrunt-non-interactive
