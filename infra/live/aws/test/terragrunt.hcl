@@ -1,5 +1,5 @@
 terraform {
-  source = "../../../src/aws"
+  source = "../../..//src/aws"
 }
 
 remote_state {
