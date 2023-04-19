@@ -102,7 +102,7 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terragrunt Plan
-      run: terragrunt plan -var-file input.tfvars -out plan.out
+      run: terragrunt plan -out plan.out
       
     - name: Terragrunt Show
       run: terragrunt show -no-color -json tfplan.plan > tfplan.json
