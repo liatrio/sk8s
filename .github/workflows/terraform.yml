@@ -64,7 +64,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: infra
+        working-directory: infra/live/aws/test/
 
     steps:
     # Checkout the repository to the GitHub Actions runner
