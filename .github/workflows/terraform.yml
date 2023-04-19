@@ -92,8 +92,6 @@ jobs:
 #         sudo chmod +x /bin/terragrunt
 #         terragrunt -v
 
-    - name: move to correct workingdir
-      run: cd ./live/aws/test/
     # Initialize a new or existing Terragrunt working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terragrunt Init
       run: terragrunt init --terragrunt-non-interactive
@@ -101,8 +99,6 @@ jobs:
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terragrunt Format
       run: terragrunt fmt
-      
-    
 
     # Generates an execution plan for Terraform
     - name: Terragrunt Plan
