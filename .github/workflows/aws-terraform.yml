@@ -134,7 +134,8 @@ jobs:
     - name: comment on pr
       run: |
         gh pr comment ${steps.pr_number.outputs.pull_number} --body ${{ env.COMMENT }}
-      env: ${{ secrets.GITHUB_TOKEN }}
+      env: 
+        Token: ${{ secrets.GITHUB_TOKEN }}
 
 
       # On push to "main", build or change infrastructure according to Terraform configuration files
