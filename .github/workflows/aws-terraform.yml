@@ -120,7 +120,7 @@ jobs:
         echo "pull_number=$pull_number" >> $GITHUB_OUTPUT
     - name: output plan as env
       run: |
-        MY_STRING=$(cat tfplan.json)
+        MY_STRING=$(cat tfplan.out)
         echo "COMMENT<<EOF" >> $GITHUB_ENV
         echo "$MY_STRING" >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
