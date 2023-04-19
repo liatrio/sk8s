@@ -46,9 +46,9 @@ name: 'Terraform'
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "updating-workflows" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "updating-workflows" ]
   workflow_dispatch:
 
 permissions:
