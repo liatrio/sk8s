@@ -117,6 +117,7 @@ jobs:
       run: |
         pull_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
         gh pr comment $pull_number --body-file tfplan.json
+      env: ${{ secrets.GITHUB_TOKEN }}
 
 
       # On push to "main", build or change infrastructure according to Terraform configuration files
