@@ -106,9 +106,7 @@ jobs:
     # Generates an execution plan for Terraform
     - name: Terragrunt Plan
       run: |
-        terragrunt plan -out tfplan.out
-        pwd
-        ls -la
+        terragrunt plan > tfplan.out
         MY_STRING=$(cat tfplan.out)
         echo "COMMENT<<EOF" >> $GITHUB_ENV
         echo "$MY_STRING" >> $GITHUB_ENV
