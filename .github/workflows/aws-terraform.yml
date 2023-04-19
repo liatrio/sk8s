@@ -47,9 +47,12 @@ name: 'Terraform'
 on:
   push:
     branches: [ "updating-workflows" ]
+    paths:
+      - "**/aws/**"
   pull_request:
     branches: [ "updating-workflows" ]
-  workflow_dispatch:
+    paths:
+      - "**/aws/**"
 
 permissions:
   contents: read
@@ -58,7 +61,7 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: [ self-hosted ]
-    environment: test
+    environment: AWS
 
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     defaults:
