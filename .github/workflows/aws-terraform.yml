@@ -60,7 +60,7 @@ permissions:
 jobs:
   terraform:
     name: 'Terraform'
-    runs-on: [ self-hosted ]
+    runs-on: [ self-hosted, benny ]
     environment: AWS
 
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
