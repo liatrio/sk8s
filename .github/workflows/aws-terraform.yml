@@ -109,7 +109,7 @@ jobs:
         terragrunt plan -out=tfplan.out
       
     - name: Terragrunt Show
-      run: terragrunt show -no-color -json tfplan.out > tfplan.json
+      run: terragrunt show -no-color tfplan.out > tfplan.txt
       
 #     - name: Terraform Change PR Commenter
 #       uses: liatrio/terraform-change-pr-commenter@v1.4.1
@@ -127,7 +127,7 @@ jobs:
 #         echo "EOF" >> $GITHUB_ENV
     - name: comment on pr
       run: |
-        gh pr comment ${{ steps.pr_number.outputs.pull_number }} -F tfplan.json
+        gh pr comment ${{ steps.pr_number.outputs.pull_number }} -F tfplan.txt
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
