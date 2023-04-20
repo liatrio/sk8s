@@ -127,8 +127,11 @@ jobs:
 #         echo "EOF" >> $GITHUB_ENV
     - name: add markdown and comment on pr
       run: |
-        echo "$(echo -n '<details><summary>Full Terraform Plan</summary> \n \n \`\`\`terraform \n'; cat tfplan.txt)" > tfplan.txt
-        echo "\`\`\` \n </details>" >> tfplan.txt
+        echo "$(echo '\`\`\`terraform \n'; cat tfplan.txt)" > tfplan.txt
+        echo "$(echo ''; cat tfplan.txt)" > tfplan.txt
+        echo "$(echo '<details><summary>Full Terraform Plan</summary>'; cat tfplan.txt)" > tfplan.txt
+        echo "\`\`\`" >> tfplan.txt
+        echo "</details>" >> tfplan.txt
         gh pr comment ${{ steps.pr_number.outputs.pull_number }} -F tfplan.txt
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
