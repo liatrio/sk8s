@@ -107,8 +107,8 @@ jobs:
     - name: Terragrunt Plan
       run: |
         terragrunt plan -no-color > tfplan.out
-        MY_STRING=$(cat tfplan.out)
-        echo "COMMENT=$MY_STRING" >> $GITHUB_ENV
+#        MY_STRING=$(cat tfplan.out)
+        echo "comment=$(cat tfplan.out)" >> $GITHUB_ENV
 #        echo "$MY_STRING" >> $GITHUB_ENV
 #        echo "EOF" >> $GITHUB_ENV
       
@@ -133,7 +133,7 @@ jobs:
       run: |
         gh pr comment ${{ steps.pr_number.outputs.pull_number }} --body ${{ env.COMMENT }}
       env: 
-        Token: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
       # On push to "main", build or change infrastructure according to Terraform configuration files
