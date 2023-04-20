@@ -54,8 +54,8 @@ on:
     #paths:
       #- "**/aws/**"
 
-permissions:
-  contents: read
+permissions: write-all
+  #contents: read
 
 jobs:
   terraform:
