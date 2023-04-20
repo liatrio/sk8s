@@ -127,7 +127,7 @@ jobs:
 #         echo "EOF" >> $GITHUB_ENV
     - name: comment on pr
       run: |
-        echo "$(echo -n '```'; cat tfplan.txt)" > tfplan.txt
+        echo "$(echo -n "```"; cat tfplan.txt)" > tfplan.txt
         echo "```" >> tfplan.txt
         gh pr comment ${{ steps.pr_number.outputs.pull_number }} -F tfplan.txt
       env: 
