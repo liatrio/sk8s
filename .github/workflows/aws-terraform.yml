@@ -107,10 +107,10 @@ jobs:
     - name: Terragrunt Plan
       run: |
         terragrunt plan -no-color > tfplan.out
-#        MY_STRING=$(cat tfplan.out)
-        echo "comment=$(cat tfplan.out)" >> $GITHUB_ENV
-#        echo "$MY_STRING" >> $GITHUB_ENV
-#        echo "EOF" >> $GITHUB_ENV
+        MY_STRING=$(cat tfplan.out)
+        echo "COMMENT<<EOF" >> $GITHUB_ENV
+        echo "$MY_STRING" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
       
 #     - name: Terragrunt Show
 #       run: terragrunt show -no-color -json tfplan.out > tfplan.json
