@@ -129,6 +129,7 @@ jobs:
       run: |
         echo "$(echo -n "<details><summary>Full Terraform Plan</summary>\n<pre>\n"; cat tfplan.txt)" > tfplan.txt
         echo "</pre>\n</details>" >> tfplan.txt
+        grep . tfplan.txt
         gh pr comment ${{ steps.pr_number.outputs.pull_number }} -F tfplan.txt
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
