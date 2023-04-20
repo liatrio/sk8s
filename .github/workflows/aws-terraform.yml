@@ -131,7 +131,7 @@ jobs:
 #         echo "EOF" >> $GITHUB_ENV
     - name: comment on pr
       run: |
-        gh pr comment ${{ steps.pr_number.outputs.pull_number }} --body ${{ env.COMMENT }}
+        gh pr comment ${{ steps.pr_number.outputs.pull_number }} --body ${{ env.MY_STRING }}
       env: 
         Token: ${{ secrets.GITHUB_TOKEN }}
 
