@@ -138,11 +138,6 @@ jobs:
           echo "job_id=${job_id}" >> $GITHUB_OUTPUT
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: output
-      run: |
-        gh run view --job ${{steps.api.outputs.job_id}} -R ryanhTesting/org-workflows --log 
-      env: 
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
 #     - name: add markdown and comment on pr
 #       run: |
