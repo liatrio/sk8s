@@ -138,9 +138,10 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: output
       run: |
-        gh run view --job ${steps.api.outputs.job_id} -R ryanhTesting/org-workflows --log 
+        gh run view --job ${{steps.api.outputs.job_id} -R ryanhTesting/org-workflows --log 
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
     - name: add markdown and comment on pr
       run: |
         echo "$(echo '```terraform \n'; cat tfplan.txt)" > tfplan.txt
