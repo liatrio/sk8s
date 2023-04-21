@@ -133,7 +133,7 @@ jobs:
       run: |
           GITHUB_API="/repos/${{github.repository}}/actions/runs/${{github.run_id}}/jobs"
           job_id=$(curl --get -Ss -H "Accept: application/vnd.github.v3+json" "https://api.github.com${GITHUB_API}?per_page=30" \
-          | jq -r  '.jobs | map(select(.name == "terraform")) | .[0]')
+          | jq -r  '.jobs | map(select(.name == "terraform")) | .[0].id')
           echo "job_id=${job_id}" >> $GITHUB_OUTPUT
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
