@@ -130,10 +130,14 @@ jobs:
 
     - name: test outputting logs live
       id: job_id
-      uses: Tiryoh/gha-jobid-action@v0.1.2
-      with: 
-        github_token: ${{secrets.GITHUB_TOKEN}}
-        job_name: terraform
+      run: |
+          GITHUB_BASEURL=https://api.github.com
+          GITHUB_API="/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs"
+          eval "$(curl --get -Ss -H "Accept: application/vnd.github.v3+json" "${GITHUB_BASEURL}${GITHUB_API}?per_page=30" \
+          | jq -r --arg job_name "terraform" '.jobs | map(select(.name == $job_name)) | .[0] | @sh "job_id=\(.id)"')"
+          echo "job_id=${job_id}" >> $GITHUB_OUTPUT
+      env: 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
 #     - name: add markdown and comment on pr
 #       run: |
