@@ -125,6 +125,17 @@ jobs:
 #         echo "COMMENT<<EOF" >> $GITHUB_ENV
 #         echo "$MY_STRING" >> $GITHUB_ENV
 #         echo "EOF" >> $GITHUB_ENV
+
+    - name: test outputting logs live
+      run: |
+          GITHUB_BASEURL=https://api.github.com
+          GITHUB_API="/repos/${GITHUB_REPOSITORY}}/actions/runs/${GITHUB_RUN_ID}}/jobs"
+          eval "$(curl --get -Ss -H "Authorization: token ${INPUT_GITHUB_TOKEN}" -H "Accept: application/vnd.github.v3+json" "${GITHUB_BASEURL}${GITHUB_API}?per_page=${INPUT_PER_PAGE:-30}" \
+          | jq -r --arg job_name "${INPUT_JOB_NAME}" '.jobs | map(select(.name == $job_name)) | .[0] | @sh "job_id=\(.id)"')"
+          echo "job_id=${job_id}" >> $GITHUB_OUTPUT
+          gh run view --job $job_id -R ryanhTesting/org-workflows --log 
+      env: 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: add markdown and comment on pr
       run: |
         echo "$(echo '```terraform \n'; cat tfplan.txt)" > tfplan.txt
