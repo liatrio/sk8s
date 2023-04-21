@@ -127,13 +127,18 @@ jobs:
 #         echo "EOF" >> $GITHUB_ENV
 
     - name: test outputting logs live
+      id: api
       run: |
           GITHUB_BASEURL=https://api.github.com
           GITHUB_API="/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs"
-          eval "$(curl --get -Ss -H "Accept: application/vnd.github.v3+json" "${GITHUB_BASEURL}${GITHUB_API}?per_page=$30" \
+          eval "$(curl --get -Ss -H "Accept: application/vnd.github.v3+json" "${GITHUB_BASEURL}${GITHUB_API}?per_page=30" \
           | jq -r --arg job_name "terraform" '.jobs | map(select(.name == $job_name)) | .[0] | @sh "job_id=\(.id)"')"
           echo "job_id=${job_id}" >> $GITHUB_OUTPUT
-          gh run view --job $job_id -R ryanhTesting/org-workflows --log 
+      env: 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: output
+      run: |
+        gh run view --job ${steps.api.outputs.job_id} -R ryanhTesting/org-workflows --log 
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: add markdown and comment on pr
