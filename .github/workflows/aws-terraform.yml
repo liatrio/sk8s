@@ -68,6 +68,8 @@ jobs:
       run:
         shell: bash
         working-directory: infra/live/aws/test/
+    outputs:
+      job_id: ${{ steps.api.outputs.job_id }}
 
     steps:
     # Checkout the repository to the GitHub Actions runner
@@ -142,17 +144,17 @@ jobs:
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
-    - name: add markdown and comment on pr
-      run: |
-        echo "$(echo '```terraform \n'; cat tfplan.txt)" > tfplan.txt
-        echo "$(echo ''; cat tfplan.txt)" > tfplan.txt
-        echo "$(echo '<details><summary>Full Terraform Plan</summary>'; cat tfplan.txt)" > tfplan.txt
-        summary=$(cat tfplan.txt | grep -v '(' | grep '#')
-        echo "$(echo $summary; cat tfplan.txt)" > tfplan.txt
-        echo "\`\`\`\n</details>" >> tfplan.txt
-        gh pr comment ${{ steps.pr_number.outputs.pull_number }} -F tfplan.txt
-      env: 
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#     - name: add markdown and comment on pr
+#       run: |
+#         echo "$(echo '```terraform \n'; cat tfplan.txt)" > tfplan.txt
+#         echo "$(echo ''; cat tfplan.txt)" > tfplan.txt
+#         echo "$(echo '<details><summary>Full Terraform Plan</summary>'; cat tfplan.txt)" > tfplan.txt
+#         summary=$(cat tfplan.txt | grep -v '(' | grep '#')
+#         echo "$(echo $summary; cat tfplan.txt)" > tfplan.txt
+#         echo "\`\`\`\n</details>" >> tfplan.txt
+#         gh pr comment ${{ steps.pr_number.outputs.pull_number }} -F tfplan.txt
+#       env: 
+#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
       # On push to "main", build or change infrastructure according to Terraform configuration files
@@ -160,3 +162,21 @@ jobs:
     - name: Terragrunt Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terragrunt apply -auto-approve -var-file input.tfvars
+  cli:
+    name: 'cli'
+    runs-on: [ self-hosted, benny ]
+    environment: AWS
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: infra/live/aws/test/
+    needs: terraform
+    steps:
+      - name: cli command
+        run: |
+          gh run view --job ${{needs.terraform.outputs.job_id}} -R ryanhTesting/org-workflows --log 
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
