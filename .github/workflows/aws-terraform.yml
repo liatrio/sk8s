@@ -60,7 +60,7 @@ permissions: write-all
 jobs:
   terraform:
     name: 'terraform'
-    runs-on: [ self-hosted, benny ]
+    runs-on: [ self-hosted ]
     environment: AWS
 
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
@@ -137,11 +137,6 @@ jobs:
           echo "job_id=${job_id}" >> $GITHUB_OUTPUT
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: cli command
-      run: |
-        gh run view --job ${{steps.job_id.outputs.job_id}} -R ${{github.repository}} --log 
-      env: 
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
 #     - name: add markdown and comment on pr
 #       run: |
@@ -161,21 +156,21 @@ jobs:
     - name: Terragrunt Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terragrunt apply -auto-approve -var-file input.tfvars
-#   cli:
-#     name: 'cli'
-#     runs-on: [ self-hosted, benny ]
-#     environment: AWS
+  cli:
+    name: 'cli'
+    runs-on: [ self-hosted ]
+    environment: AWS
 
-#     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-#     defaults:
-#       run:
-#         shell: bash
-#         working-directory: infra/live/aws/test/
-#     needs: terraform
-#     steps:
-#       - name: cli command
-#         run: |
-#           gh run view --job ${{needs.terraform.outputs.job_id}} -R ${{github.repository}} --log 
-#         env: 
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: infra/live/aws/test/
+    needs: terraform
+    steps:
+      - name: cli command
+        run: |
+          gh run view --job ${{needs.terraform.outputs.job_id}} -R ${{github.repository}} --log 
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   
