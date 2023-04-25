@@ -121,34 +121,16 @@ jobs:
       run: |
         pull_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
         echo "pull_number=$pull_number" >> $GITHUB_OUTPUT
-#     - name: output plan as env
-#       run: |
-#         MY_STRING=$(cat tfplan.out)
-#         echo "COMMENT<<EOF" >> $GITHUB_ENV
-#         echo "$MY_STRING" >> $GITHUB_ENV
-#         echo "EOF" >> $GITHUB_ENV
-
-    - name: test outputting logs live
-      id: job_id
+        
+    - name: add markdown and comment on pr
       run: |
-          GITHUB_API="/repos/${{github.repository}}/actions/runs/${{github.run_id}}/jobs"
-          job_id=$(curl --get -Ss -H "Accept: application/vnd.github.v3+json" "https://api.github.com${GITHUB_API}?per_page=30" \
-          | jq -r  '.jobs | map(select(.name == "terraform")) | .[0].id')
-          echo "job_id=${job_id}" >> $GITHUB_OUTPUT
+        echo "$(echo '```terraform \n'; cat tfplan.txt)" > tfplan.txt
+        echo "$(echo ''; cat tfplan.txt)" > tfplan.txt
+        echo "$(echo '<details><summary>Full Terraform Plan</summary>'; cat tfplan.txt)" > tfplan.txt
+        echo "\`\`\`\n</details>" >> tfplan.txt
+        gh pr comment ${{ steps.pr_number.outputs.pull_number }} -F tfplan.txt
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
-#     - name: add markdown and comment on pr
-#       run: |
-#         echo "$(echo '```terraform \n'; cat tfplan.txt)" > tfplan.txt
-#         echo "$(echo ''; cat tfplan.txt)" > tfplan.txt
-#         echo "$(echo '<details><summary>Full Terraform Plan</summary>'; cat tfplan.txt)" > tfplan.txt
-#         summary=$(cat tfplan.txt | grep -v '(' | grep '#')
-#         echo "$(echo $summary; cat tfplan.txt)" > tfplan.txt
-#         echo "\`\`\`\n</details>" >> tfplan.txt
-#         gh pr comment ${{ steps.pr_number.outputs.pull_number }} -F tfplan.txt
-#       env: 
-#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
       # On push to "main", build or change infrastructure according to Terraform configuration files
@@ -156,21 +138,4 @@ jobs:
     - name: Terragrunt Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terragrunt apply -auto-approve -var-file input.tfvars
-  cli:
-    name: 'cli'
-    runs-on: [ self-hosted ]
-    environment: AWS
-
-    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: infra/live/aws/test/
-    needs: terraform
-    steps:
-      - name: cli command
-        run: |
-          gh run view --job ${{needs.terraform.outputs.job_id}} -R ${{github.repository}} --log 
-        env: 
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   
