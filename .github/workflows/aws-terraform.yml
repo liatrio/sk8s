@@ -142,6 +142,6 @@ jobs:
       
       
     - name: aws cli call to update kubeconfig
-      run: aws eks --region "eastus" describe-cluster --name "ghest-dev"
+      run: aws eks --region "us-east-1" describe-cluster --name "ghest-dev"
   
   
