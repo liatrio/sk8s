@@ -117,12 +117,14 @@ jobs:
 #       uses: liatrio/terraform-change-pr-commenter@v1.4.1
       
     - name: get pr number
+      if: github.event_name == 'pull_request'
       id: pr_number
       run: |
         pull_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
         echo "pull_number=$pull_number" >> $GITHUB_OUTPUT
         
     - name: add markdown and comment on pr
+      if: github.event_name == 'pull_request'
       run: |
         echo "$(echo '```terraform \n'; cat tfplan.txt)" > tfplan.txt
         echo "$(echo ''; cat tfplan.txt)" > tfplan.txt
