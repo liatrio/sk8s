@@ -142,6 +142,10 @@ jobs:
       
       
     - name: aws cli call to update kubeconfig
-      run: aws eks --region "us-east-1" describe-cluster --name "ghest-dev"
+      id: cluster-status
+      run: aws eks --region "us-east-1" describe-cluster --name "ghest-dev" | jq '.cluster.status'
+      
+    - name: Terraform Destroy
+      run: terragrunt destroy -auto-approve
   
   
