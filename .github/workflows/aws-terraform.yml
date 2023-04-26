@@ -47,11 +47,11 @@ name: 'Aws-Terraform'
 on:
   push:
     branches: [ "updating-workflows" ]
-     paths:
+    paths:
        - "**/aws/**"
   pull_request:
     branches: [ "updating-workflows" ]
-     paths:
+    paths:
        - "**/aws/**"
 
 permissions: write-all
