@@ -127,10 +127,15 @@ jobs:
       if: github.ref == 'refs/heads/updating-workflows' && github.event_name == 'push'
       run: terragrunt apply -auto-approve
       
-      
     - name: azure cli call to check cluster status
       id: cluster-status
-      run: az aks show --name "sk8s" --resource-group "sk8s-cluster" | jq '.provisioningState'
-      
+      run: |
+        status=$(az aks show --name "sk8s" --resource-group "sk8s-cluster" | jq '.provisioningState')
+        echo "status=$status" >> $GITHUB_OUTPUT
+        
     - name: Terraform Destroy
       run: terragrunt destroy -auto-approve
+      
+    - name: check successful deployment or fail
+      if: ${{ steps.cluster-status.outputs.status }} == "Succeeded"
+      run: exit 1
