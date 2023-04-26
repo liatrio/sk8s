@@ -57,9 +57,15 @@ on:
 permissions:
   contents: read
 
+
+env:
+  CLIENT_ID: ${{ secrets.CLIENT_ID }}
+  CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+  SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
+  TENANT_ID: ${{ secrets.TENANT_ID }}
 jobs:
   terraform:
-    name: 'Terraform'
+    name: 'Azure-Terraform'
     runs-on: [ self-hosted ]
     environment: Azure
 
