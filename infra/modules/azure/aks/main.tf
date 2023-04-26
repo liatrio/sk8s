@@ -2,12 +2,6 @@ data "azurerm_resource_group" "self" {
   name = var.resource_group_name
 }
 
-data "azurerm_subnet" "self" {
-  name                 = var.network.subnet_name
-  virtual_network_name = var.network.virtual_network_name
-  resource_group_name  = var.resource_group_name
-}
-
 resource "azurerm_kubernetes_cluster" "self" {
   name                       = var.cluster_name
   node_resource_group        = "${data.azurerm_resource_group.self.name}-${var.cluster_name}"
@@ -20,7 +14,7 @@ resource "azurerm_kubernetes_cluster" "self" {
 
   default_node_pool {
     name                   = "hot"
-    vnet_subnet_id         = data.azurerm_subnet.self.id
+    vnet_subnet_id         = var.network.subnet_id
     vm_size                = var.default_node_pool.node_size
     enable_auto_scaling    = var.default_node_pool.auto_scaler_profile.enabled
     min_count              = var.default_node_pool.auto_scaler_profile.enabled ? var.default_node_pool.auto_scaler_profile.min_node_count : null
@@ -66,7 +60,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "self" {
 
   name                   = each.key
   kubernetes_cluster_id  = azurerm_kubernetes_cluster.self.id
-  vnet_subnet_id         = data.azurerm_subnet.self.id
+  vnet_subnet_id         = var.network.subnet_id
   vm_size                = each.value.node_size
   enable_auto_scaling    = each.value.auto_scaler_profile.enabled
   min_count              = each.value.auto_scaler_profile.enabled ? each.value.auto_scaler_profile.min_node_count : null

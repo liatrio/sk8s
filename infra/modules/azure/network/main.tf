@@ -15,14 +15,20 @@ resource "azurerm_virtual_network" "self" {
   address_space       = [var.address_space]
   dns_servers         = []
   tags                = var.tags
+}
 
-  dynamic "subnet" {
-    for_each = toset(var.subnets)
+resource "azurerm_subnet" "self" {
+  count = length(var.subnets)
 
-    content {
-      name           = subnet.value.name
-      address_prefix = subnet.value.address_prefix
-      security_group = azurerm_network_security_group.self.id
-    }
-  }
+  name                 = var.subnets[count.index].name
+  resource_group_name  = data.azurerm_resource_group.self.name
+  virtual_network_name = azurerm_virtual_network.self.name
+  address_prefixes     = [var.subnets[count.index].address_prefix]
+}
+
+resource "azurerm_subnet_network_security_group_association" "self" {
+  count = length(var.subnets)
+
+  subnet_id                 = azurerm_subnet.self[count.index].id
+  network_security_group_id = azurerm_network_security_group.self.id
 }

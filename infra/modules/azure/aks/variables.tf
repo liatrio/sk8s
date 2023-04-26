@@ -30,7 +30,7 @@ variable "network" {
     plugin               = string
     pod_cidr             = optional(string)
     service_cidr         = string
-    subnet_name          = string
+    subnet_id            = string
     virtual_network_name = string
   })
 }
