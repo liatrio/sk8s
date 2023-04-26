@@ -20,11 +20,7 @@ resource "azurerm_private_endpoint" "self" {
   name                          = "${var.container_registry_name}-private"
   resource_group_name           = data.azurerm_resource_group.self.name
   location                      = data.azurerm_resource_group.self.location
-<<<<<<< HEAD
   subnet_id                     = var.network.subnet_id
-=======
-  subnet_id                     = data.azurerm_subnet.self.id
->>>>>>> main
   custom_network_interface_name = "${var.container_registry_name}-nic"
 
   private_service_connection {
