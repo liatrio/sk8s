@@ -58,11 +58,6 @@ permissions:
   contents: read
 
 
-env:
-  CLIENT_ID: ${{ secrets.CLIENT_ID }}
-  CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-  SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
-  TENANT_ID: ${{ secrets.TENANT_ID }}
 jobs:
   terraform:
     name: 'Azure-Terraform'
@@ -82,9 +77,7 @@ jobs:
       
     # need to configure credentials for azure
     - name: Az CLI login
-      uses: azure/login@v1
-      with:
-        creds: '{"clientId":"${{ secrets.CLIENT_ID }}","clientSecret":"${{ secrets.CLIENT_SECRET }}","subscriptionId":"${{ secrets.SUBSCRIPTION_ID }}","tenantId":"${{ secrets.TENANT_ID }}"}'
+      run: az login --service-principal -u ${{ secrets.CLIENT_ID }} -p ${{ secrets.CLIENT_SECRET }} --tenant ${{ secrets.TENANT_ID }}
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
