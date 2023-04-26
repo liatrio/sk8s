@@ -130,7 +130,7 @@ jobs:
       
     - name: azure cli call to check cluster status
       id: cluster-status
-      run: az aks show --name "ghest-dev" --resource-group "sk8s" | jq '.provisioningState'
+      run: az aks show --name "sk8s" --resource-group "sk8s-cluster" | jq '.provisioningState'
       
     - name: Terraform Destroy
       run: terragrunt destroy -auto-approve
