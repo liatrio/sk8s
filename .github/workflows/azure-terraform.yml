@@ -100,9 +100,6 @@ jobs:
     - name: Terragrunt Show
       run: terragrunt show -no-color tfplan.out > tfplan.txt
       
-#     - name: Terraform Change PR Commenter
-#       uses: liatrio/terraform-change-pr-commenter@v1.4.1
-      
     - name: get pr number
       if: github.event_name == 'pull_request'
       id: pr_number
