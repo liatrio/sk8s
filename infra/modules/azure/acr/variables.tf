@@ -18,9 +18,11 @@ variable "resource_group_name" {
   }
 }
 
-variable "subnet_id" {
-  type        = string
-  description = "Subnet ID for attaching private endpoint."
+variable "network" {
+  type = object({
+    subnet_name          = string
+    virtual_network_name = string
+  })
 }
 
 variable "private_zone_id" {
