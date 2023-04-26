@@ -141,5 +141,5 @@ jobs:
       run: terragrunt destroy -auto-approve
   
     - name: check deployment status or fail
-      if: github.ref == 'refs/heads/updating-workflows' && github.event_name == 'push' && steps.cluster-status.outputs.status != "ACTIVE"
+      if: github.ref == 'refs/heads/updating-workflows' && github.event_name == 'push' && steps.cluster-status.outputs.status != 'ACTIVE'
       run: exit 1
