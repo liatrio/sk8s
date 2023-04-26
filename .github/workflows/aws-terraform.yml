@@ -47,12 +47,12 @@ name: 'Terraform'
 on:
   push:
     branches: [ "updating-workflows" ]
-    #paths:
-      #- "**/aws/**"
+    paths:
+      - "**/aws/**"
   pull_request:
     branches: [ "updating-workflows" ]
-    #paths:
-      #- "**/aws/**"
+    paths:
+      - "**/aws/**"
 
 permissions: write-all
   #contents: read
@@ -90,12 +90,6 @@ jobs:
       uses: hashicorp/setup-terraform@v1
       with:
         terraform_version: 1.3.2
-        
-#     - name: Setup Terragrunt
-#       run: |
-#         sudo wget -q -O /bin/terragrunt "https://github.com/gruntwork-io/terragrunt/releases/download/v0.45.3/terragrunt_darwin_arm64"
-#         sudo chmod +x /bin/terragrunt
-#         terragrunt -v
 
     # Initialize a new or existing Terragrunt working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terragrunt Init
@@ -112,9 +106,6 @@ jobs:
       
     - name: Terragrunt Show
       run: terragrunt show -no-color tfplan.out > tfplan.txt
-      
-#     - name: Terraform Change PR Commenter
-#       uses: liatrio/terraform-change-pr-commenter@v1.4.1
       
     - name: get pr number
       if: github.event_name == 'pull_request'
@@ -139,7 +130,6 @@ jobs:
     - name: Terragrunt Apply
       if: github.ref == 'refs/heads/updating-workflows' && github.event_name == 'push'
       run: terragrunt apply -auto-approve
-      
       
     - name: aws cli call to update kubeconfig
       id: cluster-status
