@@ -137,5 +137,5 @@ jobs:
       run: terragrunt destroy -auto-approve
       
     - name: check successful deployment or fail
-      if: steps.cluster-status.outputs.status != 'Succeeded'
+      if: steps.cluster-status.outputs.status != '"Succeeded"'
       run: exit 1
