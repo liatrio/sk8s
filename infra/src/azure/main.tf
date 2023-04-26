@@ -18,18 +18,31 @@ module "dns" {
 
 module "acr" {
   source     = "../../modules/azure/acr"
+<<<<<<< HEAD
+=======
+  depends_on = [module.network, module.dns]
+>>>>>>> main
 
   container_registry_name = "sk8simgs"
   resource_group_name     = var.resource_group_name
   private_zone_id         = module.dns.zone_id
   network                 = {
+<<<<<<< HEAD
     subnet_id          = module.network.subnets["nodes"].id
     virtual_network_name = module.network.virtual_network_name
+=======
+    subnet_name          = "nodes"
+    virtual_network_name = "sk8s-cluster-vnet"
+>>>>>>> main
   }
 }
 
 module "aks" {
   source     = "../../modules/azure/aks"
+<<<<<<< HEAD
+=======
+  depends_on = [module.network, module.dns]
+>>>>>>> main
 
   cluster_name         = "sk8s"
   resource_group_name  = var.resource_group_name
