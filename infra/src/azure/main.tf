@@ -18,20 +18,18 @@ module "dns" {
 
 module "acr" {
   source     = "../../modules/azure/acr"
-  depends_on = [module.network, module.dns]
 
   container_registry_name = "sk8simgs"
   resource_group_name     = var.resource_group_name
   private_zone_id         = module.dns.zone_id
   network                 = {
-    subnet_name          = "nodes"
-    virtual_network_name = "sk8s-cluster-vnet"
+    subnet_id          = module.network.subnets["nodes"].id
+    virtual_network_name = module.network.virtual_network_name
   }
 }
 
 module "aks" {
   source     = "../../modules/azure/aks"
-  depends_on = [module.network, module.dns]
 
   cluster_name         = "sk8s"
   resource_group_name  = var.resource_group_name
@@ -42,8 +40,8 @@ module "aks" {
     docker_bridge_cidr   = "172.17.0.1/16"
     plugin               = "azure"
     service_cidr         = "10.1.64.0/18"
-    subnet_name          = "nodes"
-    virtual_network_name = "sk8s-cluster-vnet"
+    subnet_id          = module.network.subnets["nodes"].id
+    virtual_network_name = module.network.virtual_network_name
   }
 
   default_node_pool = {
