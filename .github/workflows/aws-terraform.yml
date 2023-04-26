@@ -42,7 +42,7 @@
 #       with:
 #         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
-name: 'Terraform'
+name: 'Aws-Terraform'
 
 on:
   push:
@@ -59,7 +59,7 @@ permissions: write-all
 
 jobs:
   terraform:
-    name: 'terraform'
+    name: 'aws-terraform'
     runs-on: [ self-hosted ]
     environment: AWS
 
@@ -68,8 +68,6 @@ jobs:
       run:
         shell: bash
         working-directory: infra/live/aws/test/
-    outputs:
-      job_id: ${{ steps.job_id.outputs.job_id }}
 
     steps:
     # Checkout the repository to the GitHub Actions runner
@@ -133,9 +131,13 @@ jobs:
       
     - name: aws cli call to update kubeconfig
       id: cluster-status
-      run: aws eks --region "us-east-1" describe-cluster --name "ghest-dev" | jq '.cluster.status'
+      run: |
+        status=$(aws eks --region "us-east-1" describe-cluster --name "ghest-dev" | jq '.cluster.status')
+        echo "status=$status" >> $GITHUB_OUTPUT
       
     - name: Terraform Destroy
       run: terragrunt destroy -auto-approve
   
-  
+    - name: check deployment status or fail
+      if: steps.cluster-status.outputs.status != "ACTIVE"
+      run: exit 1
