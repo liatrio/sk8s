@@ -47,12 +47,12 @@ name: 'Aws-Terraform'
 on:
   push:
     branches: [ "updating-workflows" ]
-    paths:
-      - "**/aws/**"
+#     paths:
+#       - "**/aws/**"
   pull_request:
     branches: [ "updating-workflows" ]
-    paths:
-      - "**/aws/**"
+#     paths:
+#       - "**/aws/**"
 
 permissions: write-all
   #contents: read
@@ -131,13 +131,15 @@ jobs:
       
     - name: aws cli call to update kubeconfig
       id: cluster-status
+      if: github.ref == 'refs/heads/updating-workflows' && github.event_name == 'push'
       run: |
         status=$(aws eks --region "us-east-1" describe-cluster --name "ghest-dev" | jq '.cluster.status')
         echo "status=$status" >> $GITHUB_OUTPUT
       
     - name: Terraform Destroy
+      if: github.ref == 'refs/heads/updating-workflows' && github.event_name == 'push'
       run: terragrunt destroy -auto-approve
   
     - name: check deployment status or fail
-      if: steps.cluster-status.outputs.status != "ACTIVE"
+      if: github.ref == 'refs/heads/updating-workflows' && github.event_name == 'push' && steps.cluster-status.outputs.status != "ACTIVE"
       run: exit 1
