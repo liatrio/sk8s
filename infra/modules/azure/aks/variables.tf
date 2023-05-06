@@ -25,13 +25,15 @@ variable "private_zone_id" {
 
 variable "network" {
   type = object({
+    virtual_network_name = string
+    subnet_id            = string
+    peering_connection   = optional(string)
+    user_defined_routing = optional(bool)
     dns_service_ip       = string
     docker_bridge_cidr   = string
     plugin               = string
     pod_cidr             = optional(string)
     service_cidr         = string
-    subnet_id            = string
-    virtual_network_name = string
   })
 }
 

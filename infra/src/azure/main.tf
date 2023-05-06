@@ -5,6 +5,7 @@ module "network" {
   network_name        = var.network_name
   address_space       = var.address_space
   subnets             = var.subnets
+  peering_connection  = var.peering_connection
   tags                = var.tags
 }
 
@@ -36,12 +37,13 @@ module "aks" {
   private_zone_id      = module.dns.zone_id
 
   network = {
+    virtual_network_name = module.network.virtual_network_name
+    subnet_id            = module.network.subnets["nodes"].id
+    peering_connection   = module.network.peering_connection.virtual_network_name
     dns_service_ip       = "10.1.64.4"
     docker_bridge_cidr   = "172.17.0.1/16"
     plugin               = "azure"
     service_cidr         = "10.1.64.0/18"
-    subnet_id            = module.network.subnets["nodes"].id
-    virtual_network_name = module.network.virtual_network_name
   }
 
   default_node_pool = {
