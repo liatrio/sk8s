@@ -6,6 +6,7 @@ module "network" {
   address_space       = var.address_space
   subnets             = var.subnets
   peering_connection  = var.peering_connection
+  firewall            = var.firewall
   tags                = var.tags
 }
 
@@ -24,8 +25,9 @@ module "acr" {
   resource_group_name     = var.resource_group_name
   private_zone_id         = module.dns.zone_id
   network                 = {
-    subnet_id            = module.network.subnets["nodes"].id
-    virtual_network_name = module.network.virtual_network_name
+    virtual_network_name = var.peering_connection.virtual_network_name
+    subnet_name          = var.peering_connection.subnet_name
+    resource_group       = var.peering_connection.resource_group
   }
 }
 
@@ -35,11 +37,13 @@ module "aks" {
   cluster_name         = "sk8s"
   resource_group_name  = var.resource_group_name
   private_zone_id      = module.dns.zone_id
+  peering_connection   = var.peering_connection
 
   network = {
     virtual_network_name = module.network.virtual_network_name
     subnet_id            = module.network.subnets["nodes"].id
-    peering_connection   = module.network.peering_connection.virtual_network_name
+    peering_connection   = var.peering_connection.virtual_network_name
+    user_defined_routing = true
     dns_service_ip       = "10.1.64.4"
     docker_bridge_cidr   = "172.17.0.1/16"
     plugin               = "azure"

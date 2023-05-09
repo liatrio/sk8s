@@ -20,8 +20,9 @@ variable "resource_group_name" {
 
 variable "network" {
   type = object({
-    subnet_id            = string
     virtual_network_name = string
+    subnet_name          = string
+    resource_group       = string
   })
 }
 

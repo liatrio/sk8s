@@ -3,9 +3,9 @@ data "azurerm_resource_group" "self" {
 }
 
 data "azurerm_subnet" "self" {
-  name                 = var.network.subnet_id
+  name                 = var.network.subnet_name
   virtual_network_name = var.network.virtual_network_name
-  resource_group_name  = var.resource_group_name
+  resource_group_name  = var.network.resource_group
 }
 
 resource "azurerm_container_registry" "self" {
@@ -20,7 +20,7 @@ resource "azurerm_private_endpoint" "self" {
   name                          = "${var.container_registry_name}-private"
   resource_group_name           = data.azurerm_resource_group.self.name
   location                      = data.azurerm_resource_group.self.location
-  subnet_id                     = var.network.subnet_id
+  subnet_id                     = data.azurerm_subnet.self.id
   custom_network_interface_name = "${var.container_registry_name}-nic"
 
   private_service_connection {
@@ -28,7 +28,6 @@ resource "azurerm_private_endpoint" "self" {
     private_connection_resource_id = azurerm_container_registry.self.id
     subresource_names              = ["registry"]
     is_manual_connection           = false
-
   }
 
   private_dns_zone_group {

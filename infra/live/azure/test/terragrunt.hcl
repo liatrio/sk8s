@@ -30,6 +30,15 @@ inputs = {
       address_prefix = "10.1.128.0/18"
     }
   ]
+  peering_connection = {
+    virtual_network_name = "sk8s-vnet"
+    subnet_name          = "primary"
+    resource_group       = "sk8s"
+  }
+  firewall = {
+    name           = "sk8s-firewall"
+    resource_group = "sk8s"
+  }
   tags = {
     project = "Sk8s"
     owner   = "GitHub Practice"

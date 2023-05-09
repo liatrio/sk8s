@@ -24,6 +24,7 @@ variable "subnets" {
 variable "peering_connection" {
   type = object({
     virtual_network_name = string
+    subnet_name          = string
     resource_group       = string
   })
   description = "Virtual network to peer with."

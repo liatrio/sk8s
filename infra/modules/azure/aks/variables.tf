@@ -27,14 +27,24 @@ variable "network" {
   type = object({
     virtual_network_name = string
     subnet_id            = string
-    peering_connection   = optional(string)
-    user_defined_routing = optional(bool)
+    user_defined_routing = optional(bool, false)
     dns_service_ip       = string
     docker_bridge_cidr   = string
     plugin               = string
     pod_cidr             = optional(string)
     service_cidr         = string
   })
+}
+
+variable "peering_connection" {
+  type = object({
+    virtual_network_name = string
+    subnet_name          = string
+    resource_group       = string
+  })
+  description = "Virtual network to peer with."
+
+  default = null
 }
 
 variable "default_node_pool" {

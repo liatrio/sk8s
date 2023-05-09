@@ -1,3 +1,5 @@
+data "azurerm_client_config" "self" {}
+
 data "azurerm_resource_group" "self" {
   name = var.resource_group_name
 }
@@ -84,7 +86,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "self" {
 resource "azurerm_role_assignment" "self" {
   count = var.network.user_defined_routing ? 1 : 0
 
-  principal_id         = azurerm_kubernetes_cluster.self.identity[0].principal_id
+  principal_id         = azurerm_kubernetes_cluster.self.aci_connector_linux[0].connector_identity[0].object_id
   role_definition_name = "Network Contributor"
-  scope                = var.network.peering_connection
+  scope                = "/subscriptions/${data.azurerm_client_config.self.subscription_id}/resourceGroups/${data.azurerm_resource_group.self.name}/providers/Microsoft.Network/virtualNetworks/${var.network.virtual_network_name}"
 }

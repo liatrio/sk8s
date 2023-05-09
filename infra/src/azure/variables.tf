@@ -14,11 +14,32 @@ variable "address_space" {
 }
 
 variable "subnets" {
-  type        = list(object({
+  type = list(object({
     name           = string
     address_prefix = string
   }))
   description = "List of subnets to create in the virtual network."
+}
+
+variable "peering_connection" {
+  type = object({
+    virtual_network_name = string
+    subnet_name          = string
+    resource_group       = string
+  })
+  description = "Virtual network to peer with."
+
+  default = null
+}
+
+variable "firewall" {
+  type = object({
+    name           = string
+    resource_group = string
+  })
+  description = "Firewall to use for outbound traffic."
+
+  default = null
 }
 
 variable "tags" {
