@@ -80,9 +80,14 @@ resource "azurerm_route_table" "self" {
   }
 }
 
-resource "azurerm_subnet_route_table_association" "self" {
-  count = var.firewall != null ? 1 : 0
+#filtering subnets to have tagged name nodes 
+locals {
+  subnets = [for subnet in azurerm_subnet.self : subnet if subnet.name == "nodes"]
+}
 
-  subnet_id      = azurerm_subnet.self[0].id
+resource "azurerm_subnet_route_table_association" "self" {
+  count = (var.firewall != null || length(local.subnets) > 0) ? 1 : 0
+
+  subnet_id      = local.subnets[0].id
   route_table_id = azurerm_route_table.self[0].id
 }

@@ -22,12 +22,12 @@ inputs = {
   address_space       = "10.1.0.0/16"
   subnets             = [
     {
-      name           = "nodes"
-      address_prefix = "10.1.0.0/18"
-    },
-    {
       name           = "aci"
       address_prefix = "10.1.128.0/18"
+    },
+    {
+      name           = "nodes"
+      address_prefix = "10.1.0.0/18"
     }
   ]
   peering_connection = {
