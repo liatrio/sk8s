@@ -47,12 +47,12 @@ name: 'Azure-Terraform'
 on:
   push:
     branches: [ "updating-workflows" ]
-#     paths:
-#       - "**/azure/**"
+    paths:
+       - "**/azure/**"
   pull_request:
     branches: [ "updating-workflows" ]
-#     paths:
-#       - "**/azure/**"
+    paths:
+       - "**/azure/**"
 
 permissions:
   contents: read
