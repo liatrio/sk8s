@@ -2,12 +2,6 @@ data "azurerm_resource_group" "self" {
   name = var.resource_group_name
 }
 
-data "azurerm_subnet" "self" {
-  name                 = var.network.subnet_id
-  virtual_network_name = var.network.virtual_network_name
-  resource_group_name  = var.resource_group_name
-}
-
 resource "azurerm_container_registry" "self" {
   name                          = var.container_registry_name
   resource_group_name           = data.azurerm_resource_group.self.name
