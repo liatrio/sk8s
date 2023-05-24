@@ -26,10 +26,6 @@ variable "disk_size" {
   type = number
 }
 
-variable "namespace" {
-  type = string
-}
-
 variable "tags" {
   type = map(string)
 }

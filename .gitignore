@@ -1,6 +1,9 @@
 # Local .terraform directories
 **/.terraform/*
 
+# Terragrunt cache
+**/.terragrunt-cache
+
 # .tfstate files
 *.tfstate
 *.tfstate.*
@@ -35,4 +38,3 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
-
