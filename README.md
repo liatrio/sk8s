@@ -15,23 +15,29 @@
   - [AWS Resources](#aws-resources)
 
 ## Overview
-This project is used for deploying a Kubernetes cluster in a greenfield AWS environment with Terraform and setting up the GitHub Actions Runner Controller (ARC) to manage runners on the cluster. Aside from a few configuration options, everything about the creation process is automated for you. For instructions on how to get started with EKS, clone this repo and follow the steps in the [Quickstart Guide](#quickstart-guide) below.
+This project is used for deploying a Kubernetes cluster in a greenfield AWS or Azure environment with Terraform, and setting up the GitHub Actions Runner Controller (ARC) to manage runners on the cluster. Aside from a few configuration options, everything about the creation process is automated for you. For instructions on how to get started with each cloud provider's Kubernetes service offering, clone this repository and follow the steps in the relevant Quickstart guides:
+
+- [AWS Quickstart](docs/aws.md)
+- [Azure Quickstart](docs/azure.md)
 
 ## Prerequisites
-The prerequisites are split into two categories: the software tools neeeded to execute our infrastructure-as-code, and the account settings and credentials needed to interact with AWS and GitHub.
+The prerequisites are split into two categories: the software tools neeeded to execute our infrastructure-as-code, and the account settings and credentials needed to interact with AWS/Azure and GitHub.
 
 ### Command-Line Tools
-Terraform is used for the IaC, so you will have to install it either on your local workstation or in your CI/CD pipeline by clicking the link below. If you are leveraging GitHub-hosted runners already, or managing a fleet of VM-based self-hosted runners, then you can use the [setup-terraform](https://github.com/hashicorp/setup-terraform) action to begin migrating your workload to EKS and ARC.
+Terraform is used for the IaC, so you will have to install it either on your local workstation or in your CI/CD pipeline by clicking the link below. If you are leveraging GitHub-hosted runners already, or managing a fleet of VM-based self-hosted runners, then you can use the [setup-terraform](https://github.com/hashicorp/setup-terraform) action to begin migrating your workload to Kubernetes and ARC.
 
-Once the EKS cluster is up and running, the AWS CLI is needed to obtain the cluster's `kubeconfig` in order to connect to it using the Kubernetes command-line utility, `kubectl`.
+Terragrunt is necessary when managing multiple environments. It is a thin wrapper around Terraform that allows you to keep your Terraform code DRY by using shared modules and configuration files. It also provides a number of other features that make it easier to work with Terraform in a team setting, such as locking and state management.
+
+Once the cluster is up and running, the AWS CLI is needed to obtain the cluster's `kubeconfig` in order to connect to it using the Kubernetes command-line utility, `kubectl`.
 
 Helm is used to deploy the cluster autoscaler as well as ARC and its dependencies. For convenience, a Helmfile is included that runs through each of the charts in the correct order of deployment. All other interaction with the cluster (e.g. troubleshooting failed deployments or permissions issues) is done using `kubectl`.
 
 #### Required
-- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) (tested against v2.8.9)
+- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) (tested against v2.8.9) OR [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) (tested against v2.28.1)
 - [Helm](https://helm.sh/docs/intro/install/) (tested against v3.11.2)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) (tested against v1.25.2)
 - [Terraform](https://developer.hashicorp.com/terraform/downloads?product_intent=terraform) (v1.3.1 - v1.3.x)
+- [Terragrunt](https://terragrunt.gruntwork.io/docs/getting-started/install/) (v0.39.0 - v0.39.x)
 
 #### Optional
 - [AWS IAM Authenticator for Kubernetes](https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html) (tested against v0.5.3)
@@ -42,112 +48,26 @@ Helmfile is recommended to simplify deployment of the cluster autoscaler and ARC
 ### Account Access and Credentials
 In order to deploy the infrastructure using Terraform, you must have an AWS account with appropriate permissions to spin up the EKS cluster and its worker nodes, along with the host VPC, subnets, NAT gateways, etc. Terraform can authenticate using its AWS provider in a number of different ways, as outlined [here](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication-and-configuration). In keeping with security best practices, we recommend that you avoid hardcoding AWS credentials anywhere in your Terraform configuration and instead use environment variables or instance profile credentials. 
 
+An Azure Kubernetes cluster uses a pair of system-assigned managed identities with the permissions necessary to modify the existing network and create the cluster infrastructure listed below. This is enough for a basic Kubernetes cluster configuration, but a user-created service principal is required to take advantage of more advanced features (e.g. the ACI Connector).
+
+The managed identity or service principal assigned to AKS is responsible for creating the node pool VMs, any attached storage devices, and the network links for the Kubernetes API server. Therefore, it must be given Contributor access to the resource group that contains the cluster’s infrastructure resources (this RG is typically prefixed by MC_). When using Azure CNI, this SP must also be granted the built-in role of Network Contributor on the private virtual network.
+
+In order to leverage Azure Container Instances for burstable workloads, a second managed identity must be created with Contributor access to the cluster resource group. As before, when deploying container instances in the virtual private network, the Network Contributor role must also be assigned to the SP.
+
+The table below contains a comprehensive list of all the resources created by the AKS cluster on your behalf using the above SPs.
+
+| AKS Cluster Resources | Purpose |
+| --- | --- |
+| Load balancer | Used to forward traffic to and from the pods running on the AKS cluster. |
+| Managed identity (cluster resources) | Necessary for creating cluster infrastructure in the managed resource group on your behalf. |
+| Managed identity (ACI connector) | Necessary for interacting with ACI to spin up container instances on your behalf. |
+| Network interface | The network interface/IP address assigned to the private endpoint. |
+| Network security group | Firewall rules governing access to the cluster. |
+| Private endpoint | Created by AKS so that agent nodes can communicate with the cluster control plane. |
+| Private DNS zone | Required for agent nodes to resolve the Kubernetes API server endpoint. |
+| Public IP address(es) | For egress to the internet. |
+| Virtual machine scale set(s) | A node pool is deployed as a VMSS. |
+
+For access to additional resources like container registries and storage accounts, delegated permissions have to be granted on the resource to the SP.
+
 ARC runners can be deployed at the repository, organization, or enterprise level; the exact GitHub permissions required are listed [here](https://github.com/actions/actions-runner-controller/blob/master/docs/authenticating-to-the-github-api.md). You can use either a Personal Access Token (PAT) or install a GitHub App to authenticate the controller.
-
-## Quickstart Guides
-
-<details><summary id="local-workstation">Local Workstation</summary>
-
-### Setting up your environment:
-1. Install [pre-requisites](#pre-requisites)
-2. Follow [these steps](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html) to generate AWS credentials
-3. Create a [PAT](https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) or install a GitHub App with the desired scopes
-4. Clone the repo and move to the project's `infra` folder:
-```bash
-git clone https://github.com/gh-runner-solutions/sk8s.git
-cd sk8s/infra
-```
-5. (Optional, but highly recommended) create an S3 bucket for remote storage of Terraform state
-
-### Spinning up the EKS cluster:
-1. Update the `input.tfvars` file with your desired configuration
-2. Run Terraform:
-```bash
-terraform init
-terraform plan -var-file=input.tfvars
-terraform apply -var-file=input.tfvars
-```
-
-### Connecting to the cluster:
-1. (Optional if you do not already have a VPN solution in place) Create an AWS Client VPN as described [here](docs/aws_client_vpn.md) and attach it to the newly created VPC
-2. Run the following command to obtain the cluster's `kubeconfig`:
-```bash
-aws eks --region <your_region> update-kubeconfig --name <cluster_name>
-kubectl config use-context <kube_context>
-```
-3. Test the connection by running `kubectl get nodes`
-
-### Deploying services:
-1. Move to the `helm` folder and run: `helmfile sync`
-
-</details>
-
-<details><summary id="cicd-pipeline">CI/CD Pipeline</summary>
-
-### Setting up a GitHub Action Runner on Local Workstation
-1. Navigate to the Enterprise Settings page in your GitHub Enterprise instance
-2. Navigate to the Actions section
-3. Navigate to the Runners section and click the "Add Runner" button
-4. Select the OS and architecture of the runner you want to use based on the machine you are running it on
-5. Open a terminal or command prompt and follow the guide to install the runner
-6. Ensure the label "bootstrap" is added to the runner during the configuration process, otherwise the default settings will be used
-7. Congrats! You now have a runner that can be used to execute GitHub Actions workflows :tada:
-
-### Deploying the EKS Cluster from GitHub Actions
-1. Navigate to the repository [dxc-arc-runners](https://github.dxc.com/devcloud/dxc-arc-runners)
-2. Go to the Actions tab and click on the "Terraform" workflow on the left
-3. Using the "Run workflow" dropdown, select the branch you want to deploy
-4. Go to the AWS Console and navigate to the EKS service
-5. Validate that the cluster has been created and is in the `ACTIVE` state
-6. Congrats! You now have an EKS cluster :tada:
-
-### Setup the AWS VPN Client
-[AWS VPN Setup Guide](/docs/clientvpn-setup.md)
-
-### Deploying the GitHub Actions Runner Controller from GitHub Actions
-1. Connect to the VPN Client using the profile for the AWS account you deployed the EKS cluster to
-2. Navigate to the repository [dxc-arc-runners](https://github.dxc.com/devcloud/dxc-arc-runners)
-3. Go to the Actions tab and click on the "Deploy to EKS" workflow on the left
-4. Using the "Run workflow" dropdown, select the branch you want to deploy
-5. Navigate to the Enterprise Settings page in your GitHub Enterprise instance
-6. Navigate to the Actions section
-7. Navigate to the Runners section and validate that the runners has been deployed
-8. Congrats! You now have a GitHub Actions Runner Controller :tada:
-
-### Cleanup
-1. Open your terminal where your bootstrap runner is running and run the following command to remove the boostrap runner:
-```bash
-./config.sh remove --token <token> --unattended --url https://github.dxc.com/devcloud/dxc-arc-runners
-```
-2. Navigate to the Enterprise Settings page in your GitHub Enterprise instance
-3. Navigate to the Actions section
-4. Delete the bootstrap runner from the Runners section
-5. Navigate to the repository [dxc-arc-runners](https://github.dxc.com/devcloud/dxc-arc-runners)
-6. Navigate to the .github/workflows folder and update the terraform.yml and deploy.yml files to runs-on: self-hosted instead of runs-on: boostrap
-7. Commit the changes and push to the repository
-8. Validate the workflows run successfully
-9. Congrats! You have now completed the deployment of ARC runners :tada:
-
-### Navigate to the repository [dxc-arc-runners]()
-
-</details>
-
-## AWS Resources
-The Terraform plan creates the following resources in your AWS account:
-- VPC:
-  - Public and private subnets (1 per Availability Zone)
-  - NAT Gateways (1 per public subnet)
-  - Route tables
-  - Internet Gateway
-  - Security groups
-- IAM:
-  - Roles and policies for EKS and worker nodes
-  - Service account roles for cluster autoscaler and ALB Ingress Controller
-- EKS:
-  - Control plane
-  - Managed node group or Fargate profile
-    - EC2 instances
-    - EBS volumes
-    - Autoscaling group
-
-For more details on the network infrastructure created in AWS for the EKS cluster, please refer to the [Network Architecture](docs/network_architecture.md) document in this repository. All IAM roles and policies created by the Terraform plan are necessary for the cluster to manage its own resources, including worker nodes, autoscaling, and ingress. Information on the IAM permissions required for EKS is available [here](docs/iam_permissions.md).
