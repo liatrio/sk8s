@@ -1,5 +1,7 @@
 # sk8s
 
+// Placeholder for badges
+
 ## Table of Contents
 - [sk8s](#sk8s)
   - [Table of Contents](#table-of-contents)
@@ -32,7 +34,9 @@ Once the cluster is up and running, the AWS CLI is needed to obtain the cluster'
 Helm is used to deploy the cluster autoscaler as well as ARC and its dependencies. For convenience, a Helmfile is included that runs through each of the charts in the correct order of deployment. All other interaction with the cluster (e.g. troubleshooting failed deployments or permissions issues) is done using `kubectl`.
 
 #### Required
-- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) (tested against v2.8.9) OR [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) (tested against v2.28.1)
+- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) (tested against v2.8.9)  
+OR  
+[Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) (tested against v2.28.1)
 - [Helm](https://helm.sh/docs/intro/install/) (tested against v3.11.2)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) (tested against v1.25.2)
 - [Terraform](https://developer.hashicorp.com/terraform/downloads?product_intent=terraform) (v1.3.1 - v1.3.x)
