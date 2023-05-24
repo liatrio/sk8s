@@ -7,7 +7,7 @@ It’s also possible to create additional node pools running as either dedicated
 
 Shown below is a simple representation of the infrastructure components required by a Kubernetes cluster in Azure. If deploying to  In the following sections we’ll examine the core resources utilized by AKS in its operation, and expand to cover ancillary infrastructure for project workloads or ongoing maintenance of the cluster.
 
-![SK8s Architecture](../imgs/k8s_arch_azure.jpeg)
+![SK8s Architecture](../imgs/k8s_arch_azure.png)
 
 ## Networking
 The network infrastructure laid out in Azure is foundational to AKS. As a container orchestration platform it’s necessary to account for the node pools, container instances, and service endpoints being created as each will be assigned an IP address range from the private virtual network.
