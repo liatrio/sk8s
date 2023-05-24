@@ -3,7 +3,7 @@
 <details><summary id="local-workstation">Local Workstation</summary>
 
 ## Setting up your environment:
-1. Install [pre-requisites](#pre-requisites)
+1. Install pre-requisites
 2. Follow [these steps](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html) to generate AWS credentials
 3. Create a [PAT](https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) or install a GitHub App with the desired scopes
 4. Clone the repo and move to the project's `infra` folder:
@@ -23,7 +23,7 @@ terraform apply -var-file=input.tfvars
 ```
 
 ## Connecting to the cluster:
-1. (Optional if you do not already have a VPN solution in place) Create an AWS Client VPN as described [here](docs/aws_client_vpn.md) and attach it to the newly created VPC
+1. (Optional if you do not already have a VPN solution in place) Create an AWS Client VPN as described [here](../docs/aws_client_vpn.md) and attach it to the newly created VPC
 2. Run the following command to obtain the cluster's `kubeconfig`:
 ```bash
 aws eks --region <your_region> update-kubeconfig --name <cluster_name>
@@ -48,7 +48,7 @@ kubectl config use-context <kube_context>
 7. Congrats! You now have a runner that can be used to execute GitHub Actions workflows :tada:
 
 ## Deploying the EKS Cluster from GitHub Actions
-1. Navigate to the repository [dxc-arc-runners](https://github.dxc.com/devcloud/dxc-arc-runners)
+1. Navigate to the repository
 2. Go to the Actions tab and click on the "Terraform" workflow on the left
 3. Using the "Run workflow" dropdown, select the branch you want to deploy
 4. Go to the AWS Console and navigate to the EKS service
@@ -56,11 +56,11 @@ kubectl config use-context <kube_context>
 6. Congrats! You now have an EKS cluster :tada:
 
 ## Setup the AWS VPN Client
-[AWS VPN Setup Guide](/docs/clientvpn-setup.md)
+[AWS VPN Setup Guide](../docs/clientvpn-setup.md)
 
 ## Deploying the GitHub Actions Runner Controller from GitHub Actions
 1. Connect to the VPN Client using the profile for the AWS account you deployed the EKS cluster to
-2. Navigate to the repository [dxc-arc-runners](https://github.dxc.com/devcloud/dxc-arc-runners)
+2. Navigate to the repository
 3. Go to the Actions tab and click on the "Deploy to EKS" workflow on the left
 4. Using the "Run workflow" dropdown, select the branch you want to deploy
 5. Navigate to the Enterprise Settings page in your GitHub Enterprise instance
@@ -71,18 +71,16 @@ kubectl config use-context <kube_context>
 ## Cleanup
 1. Open your terminal where your bootstrap runner is running and run the following command to remove the boostrap runner:
 ```bash
-./config.sh remove --token <token> --unattended --url https://github.dxc.com/devcloud/dxc-arc-runners
+./config.sh remove --token <token> --unattended --url <repo_url>
 ```
 2. Navigate to the Enterprise Settings page in your GitHub Enterprise instance
 3. Navigate to the Actions section
 4. Delete the bootstrap runner from the Runners section
-5. Navigate to the repository [dxc-arc-runners](https://github.dxc.com/devcloud/dxc-arc-runners)
+5. Navigate to the repository
 6. Navigate to the .github/workflows folder and update the terraform.yml and deploy.yml files to runs-on: self-hosted instead of runs-on: boostrap
 7. Commit the changes and push to the repository
 8. Validate the workflows run successfully
 9. Congrats! You have now completed the deployment of ARC runners :tada:
-
-## Navigate to the repository [dxc-arc-runners]()
 
 </details>
 

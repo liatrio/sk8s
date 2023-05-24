@@ -46,8 +46,11 @@ Helm is used to deploy the cluster autoscaler as well as ARC and its dependencie
 Helmfile is recommended to simplify deployment of the cluster autoscaler and ARC; if you choose to use it, be sure to also install the Helm Diff plugin (`helm plugin install https://github.com/databus23/helm-diff`).
 
 ### Account Access and Credentials
+
+#### AWS
 In order to deploy the infrastructure using Terraform, you must have an AWS account with appropriate permissions to spin up the EKS cluster and its worker nodes, along with the host VPC, subnets, NAT gateways, etc. Terraform can authenticate using its AWS provider in a number of different ways, as outlined [here](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication-and-configuration). In keeping with security best practices, we recommend that you avoid hardcoding AWS credentials anywhere in your Terraform configuration and instead use environment variables or instance profile credentials. 
 
+#### Azure
 An Azure Kubernetes cluster uses a pair of system-assigned managed identities with the permissions necessary to modify the existing network and create the cluster infrastructure listed below. This is enough for a basic Kubernetes cluster configuration, but a user-created service principal is required to take advantage of more advanced features (e.g. the ACI Connector).
 
 The managed identity or service principal assigned to AKS is responsible for creating the node pool VMs, any attached storage devices, and the network links for the Kubernetes API server. Therefore, it must be given Contributor access to the resource group that contains the cluster’s infrastructure resources (this RG is typically prefixed by MC_). When using Azure CNI, this SP must also be granted the built-in role of Network Contributor on the private virtual network.
@@ -69,5 +72,7 @@ The table below contains a comprehensive list of all the resources created by th
 | Virtual machine scale set(s) | A node pool is deployed as a VMSS. |
 
 For access to additional resources like container registries and storage accounts, delegated permissions have to be granted on the resource to the SP.
+
+#### GitHub
 
 ARC runners can be deployed at the repository, organization, or enterprise level; the exact GitHub permissions required are listed [here](https://github.com/actions/actions-runner-controller/blob/master/docs/authenticating-to-the-github-api.md). You can use either a Personal Access Token (PAT) or install a GitHub App to authenticate the controller.
