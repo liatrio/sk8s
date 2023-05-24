@@ -85,4 +85,4 @@ kubectl config use-context <kube_context>
 </details>
 
 
-For more details on the infrastructure created in Azure for the AKS cluster, please refer to the [Azure Kubernetes Cluster Architecture](../docs/azure_architecture) document in this repository.
+For more details on the infrastructure created in Azure for the AKS cluster, please refer to the [Azure Kubernetes Cluster Architecture](../docs/azure_architecture.md) document in this repository.
