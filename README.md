@@ -9,10 +9,9 @@
       - [Required](#required)
       - [Optional](#optional)
     - [Account Access and Credentials](#account-access-and-credentials)
-  - [Quickstart Guides](#quickstart-guides)
-    - [Local Workstation](#local-workstation)
-    - [CI/CD Pipeline](#cicd-pipeline)
-  - [AWS Resources](#aws-resources)
+      - [AWS](#aws)
+      - [Azure](#azure)
+      - [GitHub](#github)
 
 ## Overview
 This project is used for deploying a Kubernetes cluster in a greenfield AWS or Azure environment with Terraform, and setting up the GitHub Actions Runner Controller (ARC) to manage runners on the cluster. Aside from a few configuration options, everything about the creation process is automated for you. For instructions on how to get started with each cloud provider's Kubernetes service offering, clone this repository and follow the steps in the relevant Quickstart guides:
@@ -56,22 +55,6 @@ An Azure Kubernetes cluster uses a pair of system-assigned managed identities wi
 The managed identity or service principal assigned to AKS is responsible for creating the node pool VMs, any attached storage devices, and the network links for the Kubernetes API server. Therefore, it must be given Contributor access to the resource group that contains the cluster’s infrastructure resources (this RG is typically prefixed by MC_). When using Azure CNI, this SP must also be granted the built-in role of Network Contributor on the private virtual network.
 
 In order to leverage Azure Container Instances for burstable workloads, a second managed identity must be created with Contributor access to the cluster resource group. As before, when deploying container instances in the virtual private network, the Network Contributor role must also be assigned to the SP.
-
-The table below contains a comprehensive list of all the resources created by the AKS cluster on your behalf using the above SPs.
-
-| AKS Cluster Resources | Purpose |
-| --- | --- |
-| Load balancer | Used to forward traffic to and from the pods running on the AKS cluster. |
-| Managed identity (cluster resources) | Necessary for creating cluster infrastructure in the managed resource group on your behalf. |
-| Managed identity (ACI connector) | Necessary for interacting with ACI to spin up container instances on your behalf. |
-| Network interface | The network interface/IP address assigned to the private endpoint. |
-| Network security group | Firewall rules governing access to the cluster. |
-| Private endpoint | Created by AKS so that agent nodes can communicate with the cluster control plane. |
-| Private DNS zone | Required for agent nodes to resolve the Kubernetes API server endpoint. |
-| Public IP address(es) | For egress to the internet. |
-| Virtual machine scale set(s) | A node pool is deployed as a VMSS. |
-
-For access to additional resources like container registries and storage accounts, delegated permissions have to be granted on the resource to the SP.
 
 #### GitHub
 
