@@ -1,6 +1,6 @@
 # sk8s
 
-// Placeholder for badges
+<!---Placeholder for badges-->
 
 ## Table of Contents
 - [sk8s](#sk8s)
