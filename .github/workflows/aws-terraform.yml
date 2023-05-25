@@ -46,16 +46,15 @@ name: 'Aws-Terraform'
 
 on:
   push:
-    branches: [ "updating-workflows" ]
-    paths:
-     - "**/aws/**"
+    branches: [ "workflow-updates" ]
+    #paths:
+    # - "**/aws/**"
   pull_request:
-    branches: [ "updating-workflows" ]
-    paths:
-        - "**/aws/**"
+    branches: [ "workflow-updates" ]
+    #paths:
+    #   - "**/aws/**"
 
 permissions: write-all
-  #contents: read
 
 jobs:
   terraform:
@@ -88,6 +87,7 @@ jobs:
       uses: hashicorp/setup-terraform@v1
       with:
         terraform_version: 1.3.2
+        terraform_wrapper: false
 
     # Initialize a new or existing Terragrunt working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terragrunt Init
@@ -103,7 +103,8 @@ jobs:
         terragrunt plan -out=tfplan.out
       
     - name: Terragrunt Show
-      run: terragrunt show -no-color tfplan.out > tfplan.txt
+      run: |
+        terragrunt show -no-color tfplan.out > tfplan.txt
       
     - name: get pr number
       if: github.event_name == 'pull_request'
@@ -126,20 +127,20 @@ jobs:
       # On push to "main", build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
     - name: Terragrunt Apply
-      if: github.ref == 'refs/heads/updating-workflows' && github.event_name == 'push'
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terragrunt apply -auto-approve
       
     - name: aws cli call to update kubeconfig
       id: cluster-status
-      if: github.ref == 'refs/heads/updating-workflows' && github.event_name == 'push'
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
         status=$(aws eks --region "us-east-1" describe-cluster --name "ghest-dev" | jq '.cluster.status')
         echo "status=$status" >> $GITHUB_OUTPUT
       
     - name: Terraform Destroy
-      if: github.ref == 'refs/heads/updating-workflows' && github.event_name == 'push'
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terragrunt destroy -auto-approve
   
     - name: check deployment status or fail
-      if: github.ref == 'refs/heads/updating-workflows' && github.event_name == 'push' && steps.cluster-status.outputs.status != '"ACTIVE"'
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push' && steps.cluster-status.outputs.status != '"ACTIVE"'
       run: exit 1
