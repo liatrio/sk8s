@@ -115,8 +115,8 @@ jobs:
       run: |
         echo "$(echo '```terraform \n'; cat tfplan.txt)" > tfplan.txt
         echo "$(echo ''; cat tfplan.txt)" > tfplan.txt
-        echo "$(tail -1 tfplan.txt; cat tfplan.txt)" > tfplan.txt
         echo "$(echo '<details><summary>Full Azure Terraform Plan</summary>'; cat tfplan.txt)" > tfplan.txt
+        echo "$(tail -1 tfplan.txt; cat tfplan.txt)" > tfplan.txt
         gh pr comment ${{ steps.pr_number.outputs.pull_number }} -F tfplan.txt
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
