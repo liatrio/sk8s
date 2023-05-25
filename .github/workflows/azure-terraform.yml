@@ -96,12 +96,10 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terragrunt Plan
-      run: |
-        terragrunt plan -out=tfplan.out
+      run: terragrunt plan -out=tfplan.out
       
     - name: Terragrunt Show
-      run: |
-        terragrunt show -no-color tfplan.out > tfplan.txt
+      run: terragrunt show -no-color tfplan.out > tfplan.txt
 
     - name: get pr number
       if: github.event_name == 'pull_request'
