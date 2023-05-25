@@ -1,4 +1,4 @@
-# sk8s
+# sk8s dummy
 
 Deploy a simple Kubernetes cluster in a greenfield AWS environment with Terraform. The default configuration creates a VPC with public and private subnets spread across the specified Availability Zones. Egress traffic to the internet is permitted in order to pull down app images, but the EKS cluster and its worker nodes are only accessible from within the VPC. Both Fargate and managed node groups are suported. Because the EKS cluster's API server endpoint is private, you need to have a client or site-to-site VPN connection set up.
 
