@@ -51,8 +51,8 @@ on:
       - "**/aws/**"
   pull_request:
     branches: [ 'main' ]
-    #paths:
-    #  - "**/aws/**"
+    paths:
+      - "**/aws/**"
 
 permissions:
   pull-requests: write

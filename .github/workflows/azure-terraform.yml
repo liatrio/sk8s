@@ -51,8 +51,8 @@ on:
       - "**/azure/**"
   pull_request:
     branches: [ 'main' ]
-    #paths:
-    #  - "**/azure/**"
+    paths:
+      - "**/azure/**"
 
 permissions:
   pull-requests: write
