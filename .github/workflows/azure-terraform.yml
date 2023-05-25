@@ -46,11 +46,11 @@ name: 'Azure-Terraform'
 
 on:
   push:
-    branches: [ "updating-workflows" ]
+    branches: [ '*' ]
     paths:
        - "**/azure/**"
   pull_request:
-    branches: [ "updating-workflows" ]
+    branches: [ "workflow-updates" ]
     paths:
        - "**/azure/**"
 
@@ -83,6 +83,8 @@ jobs:
       uses: hashicorp/setup-terraform@v1
       with:
         terraform_version: 1.3.2
+        terraform_wrapper: false
+
 
     # Initialize a new or existing Terragrunt working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terragrunt Init
@@ -98,8 +100,10 @@ jobs:
         terragrunt plan -out=tfplan.out
       
     - name: Terragrunt Show
-      run: terragrunt show -no-color tfplan.out > tfplan.txt
-      
+      run: |
+        terragrunt show -no-color tfplan.out > tfplan.txt
+        cat tfplan.txt
+        
     - name: get pr number
       if: github.event_name == 'pull_request'
       id: pr_number
