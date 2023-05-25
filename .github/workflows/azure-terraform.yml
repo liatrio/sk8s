@@ -54,8 +54,7 @@ on:
     #paths:
     #   - "**/azure/**"
 
-permissions:
-  contents: read
+permissions: write-all
 
 env:
   ARM_CLIENT_ID: ${{ secrets.CLIENT_ID }}
