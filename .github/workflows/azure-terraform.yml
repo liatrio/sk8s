@@ -102,7 +102,6 @@ jobs:
     - name: Terragrunt Show
       run: |
         terragrunt show -no-color tfplan.out > tfplan.txt
-        cat tfplan.txt
 
     - name: get pr number
       if: github.event_name == 'pull_request'
@@ -124,7 +123,7 @@ jobs:
       # On push to "main", build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
     - name: Terragrunt Apply
-      if: github.ref == 'refs/heads/updating-workflows' && github.event_name == 'push'
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terragrunt apply -auto-approve
       
     - name: azure cli call to check cluster status
@@ -134,9 +133,9 @@ jobs:
         echo "status=$status" >> $GITHUB_OUTPUT
         
     - name: Terraform Destroy
-      if: github.ref == 'refs/heads/updating-workflows' && github.event_name == 'push'
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terragrunt destroy -auto-approve
       
     - name: check successful deployment or fail
-      if: github.ref == 'refs/heads/updating-workflows' && github.event_name == 'push' && steps.cluster-status.outputs.status != '"Succeeded"'
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push' && steps.cluster-status.outputs.status != '"Succeeded"'
       run: exit 1
