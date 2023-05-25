@@ -45,14 +45,14 @@
 name: 'Azure-Terraform'
 
 on:
-  #push:
-   # branches: [ 'workflow-updates' ]
-    #paths:
-    #   - "**/azure/**"
+  push:
+    branches: [ 'main' ]
+    paths:
+      - "**/azure/**"
   pull_request:
-    branches: [ "main" ]
-    #paths:
-    #   - "**/azure/**"
+    branches: [ 'main' ]
+    paths:
+      - "**/azure/**"
 
 permissions: write-all
 
@@ -114,7 +114,7 @@ jobs:
       run: |
         echo "$(echo '```terraform \n'; cat tfplan.txt)" > tfplan.txt
         echo "$(echo ''; cat tfplan.txt)" > tfplan.txt
-        echo "$(echo '<details><summary>Full Terraform Plan</summary>'; cat tfplan.txt)" > tfplan.txt
+        echo "$(echo '<details><summary>Full Azure Terraform Plan</summary>'; cat tfplan.txt)" > tfplan.txt
         gh pr comment ${{ steps.pr_number.outputs.pull_number }} -F tfplan.txt
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

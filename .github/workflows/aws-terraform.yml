@@ -46,13 +46,13 @@ name: 'Aws-Terraform'
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ 'main' ]
     paths:
-     - "**/aws/**"
+      - "**/aws/**"
   pull_request:
-    branches: [ "main" ]
-    #paths:
-    #   - "**/aws/**"
+    branches: [ 'main' ]
+    paths:
+      - "**/aws/**"
 
 permissions: write-all
 
@@ -118,7 +118,7 @@ jobs:
       run: |
         echo "$(echo '```terraform \n'; cat tfplan.txt)" > tfplan.txt
         echo "$(echo ''; cat tfplan.txt)" > tfplan.txt
-        echo "$(echo '<details><summary>Full Terraform Plan</summary>'; cat tfplan.txt)" > tfplan.txt
+        echo "$(echo '<details><summary>Full AWS Terraform Plan</summary>'; cat tfplan.txt)" > tfplan.txt
         gh pr comment ${{ steps.pr_number.outputs.pull_number }} -F tfplan.txt
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
