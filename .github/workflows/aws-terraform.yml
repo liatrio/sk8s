@@ -54,7 +54,8 @@ on:
     paths:
       - "**/aws/**"
 
-permissions: write-all
+permissions:
+  pull-requests: write
 
 jobs:
   terraform:

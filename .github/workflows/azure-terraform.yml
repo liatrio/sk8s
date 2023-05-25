@@ -51,10 +51,11 @@ on:
       - "**/azure/**"
   pull_request:
     branches: [ 'main' ]
-    paths:
-      - "**/azure/**"
+    #paths:
+    #  - "**/azure/**"
 
-permissions: write-all
+permissions:
+  pull-requests: write
 
 env:
   ARM_CLIENT_ID: ${{ secrets.CLIENT_ID }}
