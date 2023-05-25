@@ -127,6 +127,7 @@ jobs:
       
     - name: azure cli call to check cluster status
       id: cluster-status
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
         status=$(az aks show --name "sk8s" --resource-group "sk8s-cluster" | jq '.provisioningState')
         echo "status=$status" >> $GITHUB_OUTPUT
