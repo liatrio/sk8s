@@ -18,6 +18,30 @@ For setting up the Client VPN to be used to connect to the EKS cluster we can us
 
 ## Connecting using Client VPN using the AWS provided client
 1. For this step we need to download and install the [AWS Client VPN](https://aws.amazon.com/vpn/client-vpn-download/).
-2. Add the Destination VPC to the security group for the EKS cluster.
-3. Make a new VPN profile. 
-    -  Documentation on setting up a [new profile](https://docs.aws.amazon.com/vpn/latest/clientvpn-user/connect-aws-client-vpn-connect.html) for your OS version of the AWS client.
+2. Make a new VPN profile.
+    - Go through the documentation on setting up a [new profile](https://docs.aws.amazon.com/vpn/latest/clientvpn-user/connect-aws-client-vpn-connect.html) for your OS version of the AWS client.
+3. Make sure the VPC is associated with the client VPN endpoint:
+
+    <img align="center" width="1000" src="../imgs/update_vpn_network_parameters.png">
+
+4. Create a Target Association:
+    - Click on the `Target Network Associations` tab and click on `Associate Target Network`:
+
+    <img align="center" width="1000" src="../imgs/target_association_tab.png">
+
+    - Associate the client VPN with the target VPC:
+
+    <img align="center" width="1000" src="../imgs/create_target_association.png">
+
+5. Add Authorization Rule:
+    - Click on the `Authorization Rules` tab and click on `Add Authorization Rule`:
+
+    <img align="center" width="1000" src="../imgs/authorization_rule_tab.png">
+
+    - Add an authorization rule to permit network traffic to the VPC:
+
+    <img align="center" width="1000" src="../imgs/create_authorization_rule.png">
+
+6. Add inbound rule to the EKS cluster security group to allow traffic from the VPC:
+
+    <img align="center" width="1000" src="../imgs/add_inbound_rule_eks.png">
