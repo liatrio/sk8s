@@ -47,8 +47,8 @@ name: 'Aws-Terraform'
 on:
   push:
     branches: [ "workflow-updates" ]
-    #paths:
-    # - "**/aws/**"
+    paths:
+     - "**/aws/**"
   pull_request:
     branches: [ "workflow-updates" ]
     #paths:

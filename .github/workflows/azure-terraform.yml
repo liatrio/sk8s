@@ -45,12 +45,12 @@
 name: 'Azure-Terraform'
 
 on:
-  push:
-    branches: [ 'workflow-updates' ]
+  #push:
+   # branches: [ 'workflow-updates' ]
     #paths:
     #   - "**/azure/**"
   pull_request:
-    branches: [ "workflow-updates" ]
+    branches: [ "main" ]
     #paths:
     #   - "**/azure/**"
 
