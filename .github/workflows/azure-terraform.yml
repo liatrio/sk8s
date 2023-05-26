@@ -1,0 +1,141 @@
+# This workflow installs the latest version of Terraform CLI and configures the Terraform CLI configuration file
+# with an API token for Terraform Cloud (app.terraform.io). On pull request events, this workflow will run
+# `terraform init`, `terraform fmt`, and `terraform plan` (speculative plan via Terraform Cloud). On push events
+# to the "main" branch, `terraform apply` will be executed.
+#
+# Documentation for `hashicorp/setup-terraform` is located here: https://github.com/hashicorp/setup-terraform
+#
+# To use this workflow, you will need to complete the following setup steps.
+#
+# 1. Create a `main.tf` file in the root of this repository with the `remote` backend and one or more resources defined.
+#   Example `main.tf`:
+#     # The configuration for the `remote` backend.
+#     terraform {
+#       backend "remote" {
+#         # The name of your Terraform Cloud organization.
+#         organization = "example-organization"
+#
+#         # The name of the Terraform Cloud workspace to store Terraform state files in.
+#         workspaces {
+#           name = "example-workspace"
+#         }
+#       }
+#     }
+#
+#     # An example resource that does nothing.
+#     resource "null_resource" "example" {
+#       triggers = {
+#         value = "A example resource that does nothing!"
+#       }
+#     }
+#
+#
+# 2. Generate a Terraform Cloud user API token and store it as a GitHub secret (e.g. TF_API_TOKEN) on this repository.
+#   Documentation:
+#     - https://www.terraform.io/docs/cloud/users-teams-organizations/api-tokens.html
+#     - https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets
+#
+# 3. Reference the GitHub secret in step using the `hashicorp/setup-terraform` GitHub Action.
+#   Example:
+#     - name: Setup Terraform
+#       uses: hashicorp/setup-terraform@v1
+#       with:
+#         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+name: 'Azure-Terraform'
+
+on:
+  push:
+    branches: [ 'main' ]
+    paths:
+      - "**/azure/**"
+  pull_request:
+    branches: [ 'main' ]
+    paths:
+      - "**/azure/**"
+
+permissions:
+  pull-requests: write
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.TENANT_ID }}
+
+jobs:
+  terraform:
+    name: 'Azure-Terraform'
+    runs-on: [ self-hosted ]
+    environment: Azure
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: infra/live/azure/test/
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.3.2
+        terraform_wrapper: false
+
+
+    # Initialize a new or existing Terragrunt working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terragrunt Init
+      run: terragrunt init --terragrunt-non-interactive
+
+    # Checks that all Terraform configuration files adhere to a canonical format
+    - name: Terragrunt Format
+      run: terragrunt fmt
+
+    # Generates an execution plan for Terraform
+    - name: Terragrunt Plan
+      run: terragrunt plan -out=tfplan.out
+      
+    - name: Terragrunt Show
+      run: terragrunt show -no-color tfplan.out > tfplan.txt
+
+    - name: get pr number
+      if: github.event_name == 'pull_request'
+      id: pr_number
+      run: |
+        pull_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+        echo "pull_number=$pull_number" >> $GITHUB_OUTPUT
+        
+    - name: add markdown and comment on pr
+      if: github.event_name == 'pull_request'
+      run: |
+        echo "$(echo '```terraform \n'; cat tfplan.txt)" > tfplan.txt
+        echo "$(echo ''; cat tfplan.txt)" > tfplan.txt
+        echo "$(echo '<details><summary>Full Azure Terraform Plan</summary>'; cat tfplan.txt)" > tfplan.txt
+        echo "$(tail -1 tfplan.txt; cat tfplan.txt)" > tfplan.txt
+        gh pr comment ${{ steps.pr_number.outputs.pull_number }} -F tfplan.txt
+      env: 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # On push to "main", build or change infrastructure according to Terraform configuration files
+      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+    - name: Terragrunt Apply
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: terragrunt apply -auto-approve
+      
+    - name: azure cli call to check cluster status
+      id: cluster-status
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        status=$(az aks show --name "sk8s" --resource-group "sk8s-cluster" | jq '.provisioningState')
+        echo "status=$status" >> $GITHUB_OUTPUT
+        
+    - name: Terraform Destroy
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: terragrunt destroy -auto-approve
+      
+    - name: check successful deployment or fail
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push' && steps.cluster-status.outputs.status != '"Succeeded"'
+      run: exit 1

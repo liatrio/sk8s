@@ -42,28 +42,32 @@
 #       with:
 #         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
-name: 'Terraform'
+name: 'Aws-Terraform'
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ 'main' ]
+    paths:
+      - "**/aws/**"
   pull_request:
-    branches: [ "main" ]
+    branches: [ 'main' ]
+    paths:
+      - "**/aws/**"
 
 permissions:
-  contents: read
+  pull-requests: write
 
 jobs:
   terraform:
-    name: 'Terraform'
-    runs-on: [ 'bootstrap' ]
-    environment: production
+    name: 'aws-terraform'
+    runs-on: [ self-hosted ]
+    environment: AWS
 
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     defaults:
       run:
         shell: bash
-        working-directory: infra
+        working-directory: infra/live/aws/test/
 
     steps:
     # Checkout the repository to the GitHub Actions runner
@@ -84,21 +88,59 @@ jobs:
       uses: hashicorp/setup-terraform@v1
       with:
         terraform_version: 1.3.2
+        terraform_wrapper: false
 
-    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-    - name: Terraform Init
-      run: terraform init
+    # Initialize a new or existing Terragrunt working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terragrunt Init
+      run: terragrunt init --terragrunt-non-interactive
 
     # Checks that all Terraform configuration files adhere to a canonical format
-    - name: Terraform Format
-      run: terraform fmt -check
+    - name: Terragrunt Format
+      run: terragrunt fmt
 
     # Generates an execution plan for Terraform
-    - name: Terraform Plan
-      run: terraform plan -var-file input.tfvars -out plan.out
+    - name: Terragrunt Plan
+      run: terragrunt plan -out=tfplan.out
+      
+    - name: Terragrunt Show
+      run: terragrunt show -no-color tfplan.out > tfplan.txt
+      
+    - name: get pr number
+      if: github.event_name == 'pull_request'
+      id: pr_number
+      run: |
+        pull_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+        echo "pull_number=$pull_number" >> $GITHUB_OUTPUT
+        
+    - name: add markdown and comment on pr
+      if: github.event_name == 'pull_request'
+      run: |
+        echo "$(echo '```terraform \n'; cat tfplan.txt)" > tfplan.txt
+        echo "$(echo ''; cat tfplan.txt)" > tfplan.txt
+        echo "$(echo '<details><summary>Full AWS Terraform Plan</summary>'; cat tfplan.txt)" > tfplan.txt
+        echo "$(tail -1 tfplan.txt; cat tfplan.txt)" > tfplan.txt
+        gh pr comment ${{ steps.pr_number.outputs.pull_number }} -F tfplan.txt
+      env: 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
       # On push to "main", build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-    - name: Terraform Apply
+    - name: Terragrunt Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply -auto-approve -var-file input.tfvars
+      run: terragrunt apply -auto-approve
+      
+    - name: aws cli call to update kubeconfig
+      id: cluster-status
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        status=$(aws eks --region "us-east-1" describe-cluster --name "ghest-dev" | jq '.cluster.status')
+        echo "status=$status" >> $GITHUB_OUTPUT
+      
+    - name: Terraform Destroy
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: terragrunt destroy -auto-approve
+  
+    - name: check deployment status or fail
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push' && steps.cluster-status.outputs.status != '"ACTIVE"'
+      run: exit 1
