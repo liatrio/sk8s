@@ -86,7 +86,7 @@ locals {
 }
 
 resource "azurerm_subnet_route_table_association" "self" {
-  count = (var.firewall != null || length(local.subnets) > 0) ? 1 : 0
+  count = (var.firewall != null && length(local.subnets) > 0) ? 1 : 0
 
   subnet_id      = local.subnets[0].id
   route_table_id = azurerm_route_table.self[0].id
