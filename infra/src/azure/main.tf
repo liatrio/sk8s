@@ -47,7 +47,7 @@ module "aks" {
   network = {
     virtual_network_name = module.network.virtual_network_name
     subnet_id            = module.network.subnets["nodes"].id
-    peering_connection   = var.peering_connection.virtual_network_name
+    peering_connection   = (var.peering_connection != null) ? var.peering_connection.virtual_network_name : null
     user_defined_routing = var.firewall == null ? false : true
     dns_service_ip       = "10.1.64.4"
     docker_bridge_cidr   = "172.17.0.1/16"
