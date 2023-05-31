@@ -23,6 +23,7 @@ variable "network" {
     virtual_network_name = string
     subnet_name          = string
     resource_group       = string
+    subnet_id            = string
   })
 }
 

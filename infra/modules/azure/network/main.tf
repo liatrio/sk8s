@@ -79,10 +79,9 @@ resource "azurerm_route_table" "self" {
     next_hop_in_ip_address = data.azurerm_firewall.self[0].ip_configuration[0].private_ip_address
   }
 }
-
-#filtering subnets to have tagged name nodes 
+ 
 locals {
-  subnets = [for subnet in azurerm_subnet.self : subnet if subnet.name == "nodes"]
+  subnets = [for subnet in var.subnets : subnet if subnet.tags.routing == "external"]
 }
 
 resource "azurerm_subnet_route_table_association" "self" {

@@ -17,6 +17,10 @@ variable "subnets" {
   type        = list(object({
     name           = string
     address_prefix = string
+    tags           = object({
+       routing     = string
+       services    = list(string)
+    })
   }))
   description = "List of subnets to create in the virtual network."
 }

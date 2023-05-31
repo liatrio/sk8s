@@ -24,10 +24,26 @@ inputs = {
     {
       name           = "aci"
       address_prefix = "10.1.128.0/18"
+      tags     = {
+        routing = "internal"
+        services = [ "aks" ]
+      }
     },
     {
       name           = "nodes"
       address_prefix = "10.1.0.0/18"
+      tags     = {
+        routing = "external"
+        services = [ "aks" ]
+      }
+    },
+    {
+      name           = "accessories"
+      address_prefix = "10.1.192.0/18"
+      tags     = {
+        routing = "external"
+        services = [ "acr" ]
+      }
     }
   ]
   peering_connection = {

@@ -18,6 +18,10 @@ module "dns" {
   is_public           = false
 }
 
+locals {
+  subnets = [for subnet in var.subnets : subnet if contains(subnet.tags.services, "acr")]
+}
+
 module "acr" {
   source     = "../../modules/azure/acr"
 
@@ -25,9 +29,10 @@ module "acr" {
   resource_group_name     = var.resource_group_name
   private_zone_id         = module.dns.zone_id
   network                 = {
-    virtual_network_name = var.peering_connection.virtual_network_name
-    subnet_name          = var.peering_connection.subnet_name
-    resource_group       = var.peering_connection.resource_group
+    virtual_network_name = module.network.virtual_network_name
+    subnet_name          = local.subnets[0].name
+    resource_group       = var.resource_group_name
+    subnet_id            = module.network.subnets[local.subnets[0].name].id
   }
 }
 
