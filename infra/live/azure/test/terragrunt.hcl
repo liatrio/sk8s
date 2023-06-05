@@ -24,24 +24,24 @@ inputs = {
     {
       name           = "aci"
       address_prefix = "10.1.128.0/18"
-      tags     = {
-        routing = "internal"
+      attributes     = {
+        routing  = "internal"
         services = [ "aks" ]
       }
     },
     {
       name           = "nodes"
       address_prefix = "10.1.0.0/18"
-      tags     = {
-        routing = "external"
+      attributes     = {
+        routing  = "external"
         services = [ "aks" ]
       }
     },
     {
-      name           = "accessories"
+      name           = "extras"
       address_prefix = "10.1.192.0/18"
-      tags     = {
-        routing = "external"
+      attributes     = {
+        routing  = "internal"
         services = [ "acr" ]
       }
     }

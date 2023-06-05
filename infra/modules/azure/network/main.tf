@@ -81,7 +81,7 @@ resource "azurerm_route_table" "self" {
 }
  
 locals {
-  subnets = [for subnet in var.subnets : subnet if subnet.tags.routing == "external"]
+  subnets = [for subnet in var.subnets : subnet if subnet.attributes.routing == "external"]
 }
 
 resource "azurerm_subnet_route_table_association" "self" {

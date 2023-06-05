@@ -19,7 +19,7 @@ module "dns" {
 }
 
 locals {
-  subnets = [for subnet in var.subnets : subnet if contains(subnet.tags.services, "acr")]
+  subnets = [for subnet in var.subnets : subnet if contains(subnet.attributes.services, "acr")]
 }
 
 module "acr" {

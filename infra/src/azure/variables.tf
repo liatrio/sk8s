@@ -17,7 +17,7 @@ variable "subnets" {
   type = list(object({
     name           = string
     address_prefix = string
-    tags           = object({
+    attributes     = object({
        routing     = string
        services    = list(string)
     })

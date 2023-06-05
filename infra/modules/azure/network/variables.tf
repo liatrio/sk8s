@@ -10,16 +10,16 @@ variable "network_name" {
 
 variable "address_space" {
   type        = string
-  description = ""
+  description = "The CIDR block of the virtual network."
 }
 
 variable "subnets" {
   type        = list(object({
     name           = string
     address_prefix = string
-    tags           = object({
-       routing     = string
-       services    = list(string)
+    attributes     = object({
+       routing  = string
+       services = list(string)
     })
   }))
   description = "List of subnets to create in the virtual network."
