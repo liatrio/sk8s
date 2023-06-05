@@ -30,7 +30,6 @@ module "acr" {
   private_zone_id         = module.dns.zone_id
   network                 = {
     virtual_network_name = module.network.virtual_network_name
-    subnet_name          = local.subnets[0].name
     resource_group       = var.resource_group_name
     subnet_id            = module.network.subnets[local.subnets[0].name].id
   }
