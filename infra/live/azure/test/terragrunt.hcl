@@ -22,16 +22,16 @@ inputs = {
   address_space       = "10.1.0.0/16"
   subnets             = [
     {
-      name           = "aci"
-      address_prefix = "10.1.128.0/18"
+      name           = "nodes"
+      address_prefix = "10.1.0.0/18"
       attributes     = {
-        routing  = "internal"
+        routing  = "external"
         services = [ "aks" ]
       }
     },
     {
-      name           = "nodes"
-      address_prefix = "10.1.0.0/18"
+      name           = "aci"
+      address_prefix = "10.1.128.0/18"
       attributes     = {
         routing  = "external"
         services = [ "aks" ]

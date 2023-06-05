@@ -63,21 +63,21 @@ module "aks" {
     zones      = ["1", "2", "3"]
   }
 
-  node_pools = {
-    spot = {
-      auto_scaler_profile = {
-        enabled        = true
-        max_node_count = 3
-        min_node_count = 1
-      }
-      node_size  = "Standard_D2s_v3"
-      zones      = ["1", "2", "3"]
-      priority   = {
-        spot_enabled = true
-        spot_price   = -1
-      }
-    }
-  }
+  # node_pools = {
+  #   spot = {
+  #     auto_scaler_profile = {
+  #       enabled        = true
+  #       max_node_count = 3
+  #       min_node_count = 1
+  #     }
+  #     node_size  = "Standard_D2s_v3"
+  #     zones      = ["1", "2", "3"]
+  #     priority   = {
+  #       spot_enabled = true
+  #       spot_price   = -1
+  #     }
+  #   }
+  # }
 
   identity = {
     assignment = "SystemAssigned"
