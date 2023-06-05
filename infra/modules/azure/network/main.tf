@@ -43,10 +43,10 @@ data "azurerm_virtual_network" "self" {
 resource "azurerm_virtual_network_peering" "peer_aks_to_hub" {
   count = var.peering_connection != null ? 1 : 0
 
-  name                         = "${var.network_name}-to-${var.peering_connection.virtual_network_name}"
-  resource_group_name          = data.azurerm_resource_group.self.name
-  virtual_network_name         = azurerm_virtual_network.self.name
-  remote_virtual_network_id    = data.azurerm_virtual_network.self[0].id
+  name                       = "${var.network_name}-to-${var.peering_connection.virtual_network_name}"
+  resource_group_name        = data.azurerm_resource_group.self.name
+  virtual_network_name       = azurerm_virtual_network.self.name
+  remote_virtual_network_id  = data.azurerm_virtual_network.self[0].id
 }
 
 resource "azurerm_virtual_network_peering" "peer_hub_to_aks" {
@@ -79,7 +79,7 @@ resource "azurerm_route_table" "self" {
     next_hop_in_ip_address = data.azurerm_firewall.self[0].ip_configuration[0].private_ip_address
   }
 }
- 
+
 locals {
   subnets = [for subnet in var.subnets : subnet if subnet.attributes.routing == "external"]
 }
