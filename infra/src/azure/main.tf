@@ -23,7 +23,7 @@ locals {
 }
 
 module "acr" {
-  source     = "../../modules/azure/acr"
+  source = "../../modules/azure/acr"
 
   container_registry_name = "sk8simgs"
   resource_group_name     = var.resource_group_name
@@ -36,12 +36,11 @@ module "acr" {
 }
 
 module "aks" {
-  source     = "../../modules/azure/aks"
+  source = "../../modules/azure/aks"
 
-  cluster_name         = "sk8s"
-  resource_group_name  = var.resource_group_name
-  private_zone_id      = module.dns.zone_id
-  peering_connection   = var.peering_connection
+  cluster_name        = "sk8s"
+  resource_group_name = var.resource_group_name
+  private_zone_id     = module.dns.zone_id
 
   network = {
     virtual_network_name = module.network.virtual_network_name
