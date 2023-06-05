@@ -84,7 +84,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "self" {
 }
 
 resource "azurerm_role_assignment" "self" {
-  count = var.network.user_defined_routing ? 1 : 0
+  count = var.network.user_defined_routing && try(azurerm_kubernetes_cluster.self.aci_connector_linux, false) ? 1 : 0
 
   principal_id         = azurerm_kubernetes_cluster.self.aci_connector_linux[0].connector_identity[0].object_id
   role_definition_name = "Network Contributor"
