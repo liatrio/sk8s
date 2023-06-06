@@ -19,6 +19,7 @@ variable "subnets" {
     address_prefix = string
     attributes     = object({
        routing     = string
+       managed     = bool
        services    = list(string)
     })
   }))

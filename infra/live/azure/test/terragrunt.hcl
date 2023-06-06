@@ -22,10 +22,20 @@ inputs = {
   address_space       = "10.1.0.0/16"
   subnets             = [
     {
+      name           = "cidr"
+      address_prefix = "10.1.64.0/18"
+      attributes     = {
+        routing  = "internal"
+        managed  = true
+        services = [ "aks" ]
+      }
+    },
+    {
       name           = "nodes"
       address_prefix = "10.1.0.0/18"
       attributes     = {
         routing  = "external"
+        managed  = false
         services = [ "aks" ]
       }
     },
@@ -34,7 +44,8 @@ inputs = {
       address_prefix = "10.1.128.0/18"
       attributes     = {
         routing  = "external"
-        services = [ "aks" ]
+        managed  = false
+        services = [ "aks" ] 
       }
     },
     {
@@ -42,6 +53,7 @@ inputs = {
       address_prefix = "10.1.192.0/18"
       attributes     = {
         routing  = "internal"
+        managed  = false
         services = [ "acr" ]
       }
     }

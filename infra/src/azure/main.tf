@@ -1,10 +1,14 @@
+locals {
+  create_subnets = [for subnet in var.subnets : subnet if subnet.attributes.managed == false]
+}
+
 module "network" {
   source = "../../modules/azure/network"
 
   resource_group_name = var.resource_group_name
   network_name        = var.network_name
   address_space       = var.address_space
-  subnets             = var.subnets
+  subnets             = local.create_subnets
   peering_connection  = var.peering_connection
   firewall            = var.firewall
   tags                = var.tags
@@ -35,6 +39,10 @@ module "acr" {
   }
 }
 
+locals{
+  managed_subnets = [for subnet in var.subnets : subnet if subnet.attributes.managed == true]
+}
+
 module "aks" {
   source = "../../modules/azure/aks"
 
@@ -47,10 +55,10 @@ module "aks" {
     subnet_id            = module.network.subnets["nodes"].id
     peering_connection   = (var.peering_connection != null) ? var.peering_connection.virtual_network_name : null
     user_defined_routing = var.firewall == null ? false : true
-    dns_service_ip       = "10.1.64.4"
+    dns_service_ip       = cidrhost(local.managed_subnets[0].address_prefix, 4)
     docker_bridge_cidr   = "172.17.0.1/16"
     plugin               = "azure"
-    service_cidr         = "10.1.64.0/18"
+    service_cidr         = local.managed_subnets[0].address_prefix
   }
 
   default_node_pool = {
