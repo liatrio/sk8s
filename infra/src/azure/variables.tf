@@ -13,6 +13,13 @@ variable "address_space" {
   description = ""
 }
 
+variable "system_managed_dns"{
+  type        = bool
+  description = "Determine if dns zone is managed by system"
+
+  default = true
+}
+
 variable "subnets" {
   type = list(object({
     name           = string

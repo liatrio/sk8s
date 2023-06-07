@@ -1,5 +1,5 @@
 locals {
-  create_subnets = [for subnet in var.subnets : subnet if subnet.attributes.managed == false]
+  create_subnets = [for subnet in var.subnets : subnet if !subnet.attributes.managed]
 }
 
 module "network" {
@@ -20,6 +20,7 @@ module "dns" {
   domain_name         = "sk8s.internal.liatr.io"
   resource_group_name = var.resource_group_name
   is_public           = false
+  system_managed_dns = var.system_managed_dns
 }
 
 locals {
@@ -31,7 +32,7 @@ module "acr" {
 
   container_registry_name = "sk8simgs"
   resource_group_name     = var.resource_group_name
-  private_zone_id         = module.dns.zone_id
+  private_zone_id         = module.dns.zone_id == null ? "System" : module.dns.zone_id
   network                 = {
     virtual_network_name = module.network.virtual_network_name
     resource_group       = var.resource_group_name
@@ -40,7 +41,7 @@ module "acr" {
 }
 
 locals{
-  managed_subnets = [for subnet in var.subnets : subnet if subnet.attributes.managed == true]
+  managed_subnets = [for subnet in var.subnets : subnet if subnet.attributes.managed]
 }
 
 module "aks" {
@@ -48,7 +49,7 @@ module "aks" {
 
   cluster_name        = "sk8s"
   resource_group_name = var.resource_group_name
-  private_zone_id     = module.dns.zone_id
+  private_zone_id     = module.dns.zone_id == null ? "System" : module.dns.zone_id
 
   network = {
     virtual_network_name = module.network.virtual_network_name

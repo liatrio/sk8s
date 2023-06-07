@@ -20,6 +20,7 @@ inputs = {
   resource_group_name = "sk8s-cluster"
   network_name        = "sk8s-cluster-vnet"
   address_space       = "10.1.0.0/16"
+  system_managed_dns  = false
   subnets             = [
     {
       name           = "cidr"

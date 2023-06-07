@@ -24,8 +24,12 @@ resource "azurerm_private_endpoint" "self" {
     is_manual_connection           = false
   }
 
-  private_dns_zone_group {
-    name                 = "${var.container_registry_name}-dns"
-    private_dns_zone_ids = [var.private_zone_id]
+  dynamic "private_dns_zone_group" {
+    for_each = var.private_zone_id != "System" ? [1] : []
+
+    content {
+      name                 = "${var.container_registry_name}-dns"
+      private_dns_zone_ids = [var.private_zone_id]
+    }
   }
 }
