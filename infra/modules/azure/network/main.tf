@@ -24,6 +24,19 @@ resource "azurerm_subnet" "self" {
   resource_group_name  = data.azurerm_resource_group.self.name
   virtual_network_name = azurerm_virtual_network.self.name
   address_prefixes     = [var.subnets[count.index].address_prefix]
+
+  dynamic "delegation" {
+    for_each = contains(var.subnets[count.index].attributes.services, "aci") ? [1] : []
+
+    content {
+      name = "aciDelegation"
+
+      service_delegation {
+        name    = "Microsoft.ContainerInstance/containerGroups"
+        actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
+      }
+    }
+  }
 }
 
 resource "azurerm_subnet_network_security_group_association" "self" {
@@ -81,12 +94,13 @@ resource "azurerm_route_table" "self" {
 }
 
 locals {
-  subnets = [for subnet in var.subnets : subnet if subnet.attributes.routing == "external"]
+  external_subnets = [for subnet in var.subnets : subnet.name if subnet.attributes.routing == "external"]
+  subnet_ids       = [for subnet in azurerm_subnet.self : subnet.id if contains(local.external_subnets, subnet.name)]
 }
 
 resource "azurerm_subnet_route_table_association" "self" {
-  count = (var.firewall != null && length(local.subnets) > 0) ? 1 : 0
+  count = (var.firewall != null && length(local.subnet_ids) > 0) ? 1 : 0
 
-  subnet_id      = local.subnets[0].id
+  subnet_id      = local.subnet_ids[0]
   route_table_id = azurerm_route_table.self[0].id
 }
