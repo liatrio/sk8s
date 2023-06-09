@@ -23,10 +23,10 @@ inputs = {
   system_managed_dns  = false
   subnets             = [
     {
-      name           = "cidr"
+      name           = "services"
       address_prefix = "10.1.64.0/18"
       attributes     = {
-        routing  = "internal"
+        routing  = "external"
         managed  = true
         services = [ "aks" ]
       }
@@ -64,11 +64,11 @@ inputs = {
     subnet_name          = "primary"
     resource_group       = "sk8s"
   }
-#  firewall = {
-#    name           = "sk8s-firewall"
-#
-#    resource_group = "sk8s"
-#  }
+  firewall = {
+    name           = "sk8s-firewall"
+
+    resource_group = "sk8s"
+  }
   tags = {
     project = "Sk8s"
     owner   = "GitHub Practice"
