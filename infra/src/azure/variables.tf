@@ -54,6 +54,34 @@ variable "firewall" {
   default = null
 }
 
+variable "network_rules" {
+  type = list(object({
+      name                  = string
+      protocols             = list(string)
+      source_addresses      = list(string)
+      destination_addresses = list(string)
+      destination_ports     = list(string)
+  }))
+  description = "List of network rules to be passed into the firewall policy"
+
+  default = null
+}
+
+variable "application_rules" {
+  type = list(object({
+    name              = string
+    source_addresses  = list(string)
+    destination_fqdns = list(string)
+    protocols         = object({
+      port = string
+      type = string
+    })
+  }))
+  description = "List of application rules to be passed into the firewall policy"
+
+  default = null
+}
+
 variable "tags" {
   type = map(string)
 }
