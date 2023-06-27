@@ -20,6 +20,7 @@ inputs = {
   resource_group_name = "sk8s-cluster"
   network_name        = "sk8s-cluster-vnet"
   address_space       = "10.1.0.0/16"
+  private_cluster     = true
   system_managed_dns  = false
   subnets             = [
     {
@@ -86,6 +87,11 @@ inputs = {
   firewall = {
     name           = "sk8s-firewall"
     resource_group = "sk8s-cluster"
+  }
+  vpn-gateway = {
+    name = "sk8s-vpn-gateway"
+    address_space = "10.7.0.0/24"
+    tenant_id = ""
   }
   tags = {
     project = "Sk8s"

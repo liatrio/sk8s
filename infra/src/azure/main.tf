@@ -29,10 +29,27 @@ module "firewall" {
   network_rules          = var.network_rules 
   network                = {
     virtual_network_name = module.network.virtual_network_name
-    resource_group       = var.resource_group_name
     subnet_name          = length(local.firewall_subnet) > 0 ? local.firewall_subnet[0].name : null
     subnet_id            = length(local.firewall_subnet) > 0 ? (local.firewall_subnet[0].attributes.managed ? null : module.network.subnets[local.firewall_subnet[0].name].id) : null
-    managed              = length(local.firewall_subnet) > 0 ? local.firewall_subnet[0].attributes.managed : true
+    managed              = length(local.firewall_subnet) > 0 ? local.firewall_subnet[0].attributes.managed : null
+  }
+}
+
+locals {
+  gateway_subnet = [for subnet in var.subnets : subnet if contains(subnet.attributes.services, "gateway")]
+}
+
+module "vpn-gateway"{
+  source = "../../modules/azure/vpn-gateway"
+
+  resource_group_name = var.resource_group_name
+  vpn-gateway         = var.vpn-gateway
+  tags                = var.tags
+
+  network                = {
+    virtual_network_name = module.network.virtual_network_name
+    subnet_id            = length(local.gateway_subnet) > 0 ? module.network.subnets[local.gateway_subnet[0].name].id : null
+    managed              = length(local.gateway_subnet) > 0 ? local.gateway_subnet[0].attributes.managed : null
   }
 }
 
@@ -71,6 +88,7 @@ module "aks" {
 
   cluster_name        = "sk8s"
   resource_group_name = var.resource_group_name
+  private_cluster     = var.private_cluster
   private_zone_id     = module.dns.zone_id == null ? "System" : module.dns.zone_id
 
   network = {

@@ -13,6 +13,11 @@ variable "address_space" {
   description = ""
 }
 
+variable "private_cluster" {
+  type        = bool
+  description = "Determine whether aks cluster will be private or public"
+}
+
 variable "system_managed_dns"{
   type        = bool
   description = "Determine if dns zone is managed by system"
@@ -80,6 +85,17 @@ variable "application_rules" {
   description = "List of application rules to be passed into the firewall policy"
 
   default = null
+}
+
+variable "vpn-gateway" {
+    type = object({
+      name          = string
+      address_space = string
+      tenant_id     = string
+    })
+    description = "Vpn-gateway configuration to connect to the cluster"
+
+    default = null
 }
 
 variable "tags" {

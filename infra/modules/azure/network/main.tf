@@ -26,7 +26,7 @@ resource "azurerm_subnet" "self" {
   address_prefixes     = [var.subnets[count.index].address_prefix]
 }
 
-locals{ #ignore firewall and gateway security group association
+locals{ #ignore firewall and gateway subnets for security group association
   subnets = [for subnet in azurerm_subnet.self : subnet if (subnet.name != "GatewaySubnet" && subnet.name != "AzureFirewallSubnet")]
 }
 
