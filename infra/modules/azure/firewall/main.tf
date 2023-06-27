@@ -3,7 +3,7 @@ data "azurerm_resource_group" "self" {
 }
 
 data "azurerm_subnet" "self"{
-  count = var.firewall != null && var.network.managed ? 1 : 0
+  count = var.firewall != null && var.network.managed == true ? 1 : 0
 
   name                 = var.network.subnet_name
   virtual_network_name = var.network.virtual_network_name
@@ -11,7 +11,7 @@ data "azurerm_subnet" "self"{
 }
 
 data "azurerm_firewall" "self" {
-  count = var.firewall != null && var.network.managed ? 1 : 0
+  count = var.firewall != null && var.network.managed == true ? 1 : 0
 
   name                = var.firewall.name
   resource_group_name = var.firewall.resource_group
@@ -81,7 +81,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "self" {
 }
 
 resource "azurerm_firewall" "self" {
-  count = var.firewall != null && !var.network.managed ? 1 : 0 
+  count = var.firewall != null && var.network.managed == false ? 1 : 0 
 
   name                = var.firewall.name
   resource_group_name = data.azurerm_resource_group.self.name
