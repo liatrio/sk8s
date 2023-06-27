@@ -9,7 +9,7 @@ resource "azurerm_kubernetes_cluster" "self" {
   node_resource_group        = "${data.azurerm_resource_group.self.name}-${var.cluster_name}"
   resource_group_name        = data.azurerm_resource_group.self.name
   location                   = data.azurerm_resource_group.self.location
-  private_cluster_enabled    = true
+  private_cluster_enabled    = var.private_cluster
   dns_prefix                 = var.identity.assignment == "SystemAssigned" ? var.cluster_name : null
   dns_prefix_private_cluster = var.identity.assignment == "SystemAssigned" ? null : var.cluster_name
   private_dns_zone_id        = var.identity.assignment == "SystemAssigned" ? null : var.private_zone_id
