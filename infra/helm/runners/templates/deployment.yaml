@@ -13,8 +13,15 @@ spec:
       {{- end }}
       {{- if .Values.labels is defined }}
       labels: {{ .Values.labels }}
+      {{- end }}
       containers:
       - name: runner
+        {{- if .Values.image is defined }}
+        image: {{ .Values.image }}
+        {{- end }}
+        {{- if .Values.image.local is defined }}
+        imagePullPolicy: {{ .Values.image.local }}
+        {{- end }}
         resources:
           limits:
             cpu: {{ .Values.limits.runner.cpu.hard }}
