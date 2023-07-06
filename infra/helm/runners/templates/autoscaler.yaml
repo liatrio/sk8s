@@ -9,8 +9,8 @@ spec:
   scaleTargetRef:
     kind: RunnerDeployment
     name: init-runners
-  minReplicas: {{ .Values.replicas.min }}
-  maxReplicas: {{ .Values.replicas.max }}
+  minReplicas: {{ .Values.minReplicas }}
+  maxReplicas: {{ .Values.maxReplicas }}
   metrics:
     - type: PercentageRunnersBusy
       scaleUpThreshold: {{ .Values.autoscaling.scaleUpThreshold }}

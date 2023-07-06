@@ -6,21 +6,21 @@ metadata:
 spec:
   template:
     spec:
-      {{- if .Values.repository is defined }}
+      {{- if .Values.repository }}
       repository: {{ .Values.repository }}
-      {{- else if .Values.organization is defined }}
+      {{- else if .Values.organization }}
       organization: {{ .Values.organization }}
       {{- end }}
-      {{- if .Values.labels is defined }}
+      {{- if .Values.labels}}
       labels: {{ .Values.labels }}
       {{- end }}
       containers:
       - name: runner
-        {{- if .Values.image is defined }}
+        {{- if .Values.image }}
         image: {{ .Values.image }}
         {{- end }}
-        {{- if .Values.image.local is defined }}
-        imagePullPolicy: {{ .Values.image.local }}
+        {{- if .Values.local }}
+        imagePullPolicy: {{ .Values.local }}
         {{- end }}
         resources:
           limits:
