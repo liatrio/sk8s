@@ -13,6 +13,11 @@ variable "address_space" {
   description = ""
 }
 
+variable "private_cluster" {
+  type        = bool
+  description = "Determine whether aks cluster will be private or public"
+}
+
 variable "system_managed_dns"{
   type        = bool
   description = "Determine if dns zone is managed by system"
@@ -52,6 +57,45 @@ variable "firewall" {
   description = "Firewall to use for outbound traffic."
 
   default = null
+}
+
+variable "network_rules" {
+  type = list(object({
+      name                  = string
+      protocols             = list(string)
+      source_addresses      = list(string)
+      destination_addresses = list(string)
+      destination_ports     = list(string)
+  }))
+  description = "List of network rules to be passed into the firewall policy"
+
+  default = null
+}
+
+variable "application_rules" {
+  type = list(object({
+    name              = string
+    source_addresses  = list(string)
+    destination_fqdns = list(string)
+    protocols         = object({
+      port = string
+      type = string
+    })
+  }))
+  description = "List of application rules to be passed into the firewall policy"
+
+  default = null
+}
+
+variable "vpn-gateway" {
+    type = object({
+      name          = string
+      address_space = string
+      tenant_id     = string
+    })
+    description = "Vpn-gateway configuration to connect to the cluster"
+
+    default = null
 }
 
 variable "tags" {

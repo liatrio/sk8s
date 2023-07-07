@@ -24,25 +24,16 @@ resource "azurerm_subnet" "self" {
   resource_group_name  = data.azurerm_resource_group.self.name
   virtual_network_name = azurerm_virtual_network.self.name
   address_prefixes     = [var.subnets[count.index].address_prefix]
+}
 
-  dynamic "delegation" {
-    for_each = contains(var.subnets[count.index].attributes.services, "aci") ? [1] : []
-
-    content {
-      name = "aciDelegation"
-
-      service_delegation {
-        name    = "Microsoft.ContainerInstance/containerGroups"
-        actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
-      }
-    }
-  }
+locals{ #ignore firewall and gateway subnets for security group association
+  subnets = [for subnet in azurerm_subnet.self : subnet if (subnet.name != "GatewaySubnet" && subnet.name != "AzureFirewallSubnet")]
 }
 
 resource "azurerm_subnet_network_security_group_association" "self" {
-  count = length(var.subnets)
+  count = length(local.subnets)
 
-  subnet_id                 = azurerm_subnet.self[count.index].id
+  subnet_id                 = local.subnets[count.index].id
   network_security_group_id = azurerm_network_security_group.self.id
 }
 
@@ -69,38 +60,4 @@ resource "azurerm_virtual_network_peering" "peer_hub_to_aks" {
   resource_group_name          = var.peering_connection.resource_group
   virtual_network_name         = var.peering_connection.virtual_network_name
   remote_virtual_network_id    = azurerm_virtual_network.self.id
-}
-
-data "azurerm_firewall" "self" {
-  count = var.firewall != null ? 1 : 0
-
-  name                = var.firewall.name
-  resource_group_name = var.firewall.resource_group
-}
-
-resource "azurerm_route_table" "self" {
-  count = var.firewall != null ? 1 : 0
-
-  name                = "${var.network_name}-rt"
-  resource_group_name = data.azurerm_resource_group.self.name
-  location            = data.azurerm_resource_group.self.location
-
-  route {
-    name                   = "aks_outbound"
-    address_prefix         = "0.0.0.0/0"
-    next_hop_type          = "VirtualAppliance"
-    next_hop_in_ip_address = data.azurerm_firewall.self[0].ip_configuration[0].private_ip_address
-  }
-}
-
-locals {
-  external_subnets = [for subnet in var.subnets : subnet.name if subnet.attributes.routing == "external"]
-  subnet_ids       = [for subnet in azurerm_subnet.self : subnet.id if contains(local.external_subnets, subnet.name)]
-}
-
-resource "azurerm_subnet_route_table_association" "self" {
-  count = (var.firewall != null && length(local.subnet_ids) > 0) ? 1 : 0
-
-  subnet_id      = local.subnet_ids[0]
-  route_table_id = azurerm_route_table.self[0].id
 }

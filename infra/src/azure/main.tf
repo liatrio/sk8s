@@ -14,13 +14,52 @@ module "network" {
   tags                = var.tags
 }
 
+locals {
+  association_subnets = [for subnet in var.subnets : subnet if subnet.attributes.routing == "external"]
+  firewall_subnet     = [for subnet in var.subnets : subnet if contains(subnet.attributes.services, "firewall")]
+}
+
+module "firewall" {
+  source = "../../modules/azure/firewall"
+
+  resource_group_name    = var.resource_group_name
+  firewall               = var.firewall
+  association_subnet_id  = module.network.subnets[local.association_subnets[0].name].id
+  application_rules      = var.application_rules
+  network_rules          = var.network_rules 
+  network                = {
+    virtual_network_name = module.network.virtual_network_name
+    subnet_name          = length(local.firewall_subnet) > 0 ? local.firewall_subnet[0].name : null
+    subnet_id            = length(local.firewall_subnet) > 0 ? (local.firewall_subnet[0].attributes.managed ? null : module.network.subnets[local.firewall_subnet[0].name].id) : null
+    managed              = length(local.firewall_subnet) > 0 ? local.firewall_subnet[0].attributes.managed : null
+  }
+}
+
+locals {
+  gateway_subnet = [for subnet in var.subnets : subnet if contains(subnet.attributes.services, "gateway")]
+}
+
+module "vpn-gateway"{
+  source = "../../modules/azure/vpn-gateway"
+
+  resource_group_name = var.resource_group_name
+  vpn-gateway         = var.vpn-gateway
+  tags                = var.tags
+
+  network                = {
+    virtual_network_name = module.network.virtual_network_name
+    subnet_id            = length(local.gateway_subnet) > 0 ? module.network.subnets[local.gateway_subnet[0].name].id : null
+    managed              = length(local.gateway_subnet) > 0 ? local.gateway_subnet[0].attributes.managed : null
+  }
+}
+
 module "dns" {
   source = "../../modules/azure/dns"
 
   domain_name         = "sk8s.internal.liatr.io"
   resource_group_name = var.resource_group_name
   is_public           = false
-  system_managed_dns = var.system_managed_dns
+  system_managed_dns  = var.system_managed_dns
 }
 
 locals {
@@ -49,11 +88,12 @@ module "aks" {
 
   cluster_name        = "sk8s"
   resource_group_name = var.resource_group_name
+  private_cluster     = var.private_cluster
   private_zone_id     = module.dns.zone_id == null ? "System" : module.dns.zone_id
 
   network = {
     virtual_network_name = module.network.virtual_network_name
-    subnet_id            = module.network.subnets["nodes"].id
+    subnet_id            = var.firewall == null ? module.network.subnets["nodes"].id : module.firewall.route_table_id
     peering_connection   = (var.peering_connection != null) ? var.peering_connection.virtual_network_name : null
     user_defined_routing = var.firewall == null ? false : true
     dns_service_ip       = cidrhost(local.managed_subnets[0].address_prefix, 4)

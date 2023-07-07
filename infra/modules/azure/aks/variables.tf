@@ -18,6 +18,11 @@ variable "resource_group_name" {
   }
 }
 
+variable "private_cluster" {
+  type        = bool
+  description = "Determine whether aks cluster will be private or public"
+}
+
 variable "private_zone_id" {
   type        = string
   description = "ID of private DNS zone for looking up container registry private endpoint."
