@@ -1,0 +1,39 @@
+apiVersion: actions.summerwind.dev/v1alpha1
+kind: RunnerDeployment
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  template:
+    spec:
+      {{- if .Values.repository }}
+      repository: {{ .Values.repository }}
+      {{- else if .Values.organization }}
+      organization: {{ .Values.organization }}
+      {{- end }}
+      {{- if .Values.labels}}
+      labels: {{ .Values.labels }}
+      {{- end }}
+      containers:
+      - name: runner
+        {{- if .Values.image }}
+        image: {{ .Values.image }}
+        {{- end }}
+        {{- if .Values.local }}
+        imagePullPolicy: {{ .Values.local }}
+        {{- end }}
+        resources:
+          limits:
+            cpu: {{ .Values.limits.runner.cpu.hard }}
+            memory: {{ .Values.limits.runner.memory.hard }}
+          requests:
+            cpu: {{ .Values.limits.runner.cpu.soft }}
+            memory: {{ .Values.limits.runner.memory.soft }}
+      - name: docker
+        resources:
+          limits:
+            cpu: {{ .Values.limits.docker.cpu.hard }}
+            memory: {{ .Values.limits.docker.memory.hard }}
+          requests:
+            cpu: {{ .Values.limits.docker.cpu.soft }}
+            memory: {{ .Values.limits.docker.memory.soft }}
