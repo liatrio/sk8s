@@ -1,10 +1,7 @@
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.3.1 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4.26.0 |
-| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | ~> 2.12.1 |
+No requirements.
 
 ## Providers
 
@@ -14,8 +11,8 @@ No providers.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_eks"></a> [eks](#module\_eks) | ./modules/eks | n/a |
-| <a name="module_network"></a> [network](#module\_network) | ./modules/network | n/a |
+| <a name="module_eks"></a> [eks](#module\_eks) | ../../modules/aws/eks | n/a |
+| <a name="module_network"></a> [network](#module\_network) | ../../modules/aws/network | n/a |
 
 ## Resources
 
@@ -30,7 +27,6 @@ No resources.
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | n/a | `string` | n/a | yes |
 | <a name="input_disk_size"></a> [disk\_size](#input\_disk\_size) | n/a | `number` | n/a | yes |
 | <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | n/a | `string` | n/a | yes |
-| <a name="input_namespace"></a> [namespace](#input\_namespace) | n/a | `string` | n/a | yes |
 | <a name="input_network_name"></a> [network\_name](#input\_network\_name) | n/a | `string` | n/a | yes |
 | <a name="input_subnet_range"></a> [subnet\_range](#input\_subnet\_range) | n/a | `number` | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | n/a | `map(string)` | n/a | yes |
@@ -38,3 +34,4 @@ No resources.
 ## Outputs
 
 No outputs.
+<!-- END_TF_DOCS -->
