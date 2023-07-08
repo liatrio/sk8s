@@ -1,10 +1,6 @@
 name: "Generate terraform docs"
 on:
-  push:
-    branches:
-        - terradoc-poc
-    paths:
-        - '.github/workflow/terradocs.yml'
+    workflow_dispatch:
 
 jobs:
   update-docs:
