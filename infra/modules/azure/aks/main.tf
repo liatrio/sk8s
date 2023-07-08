@@ -1,3 +1,5 @@
+data "azurerm_client_config" "self" {}
+
 data "azurerm_resource_group" "self" {
   name = var.resource_group_name
 }
@@ -7,7 +9,7 @@ resource "azurerm_kubernetes_cluster" "self" {
   node_resource_group        = "${data.azurerm_resource_group.self.name}-${var.cluster_name}"
   resource_group_name        = data.azurerm_resource_group.self.name
   location                   = data.azurerm_resource_group.self.location
-  private_cluster_enabled    = true
+  private_cluster_enabled    = var.private_cluster
   dns_prefix                 = var.identity.assignment == "SystemAssigned" ? var.cluster_name : null
   dns_prefix_private_cluster = var.identity.assignment == "SystemAssigned" ? null : var.cluster_name
   private_dns_zone_id        = var.identity.assignment == "SystemAssigned" ? null : var.private_zone_id
@@ -50,6 +52,7 @@ resource "azurerm_kubernetes_cluster" "self" {
     network_plugin     = var.network.plugin
     network_policy     = var.network.plugin == "azure" ? var.network.plugin : null
     dns_service_ip     = var.network.dns_service_ip
+    outbound_type      = var.network.user_defined_routing ? "userDefinedRouting" : "loadBalancer"
     pod_cidr           = var.network.plugin == "azure" ? null : var.network.pod_cidr
     service_cidr       = var.network.service_cidr
   }
@@ -78,4 +81,20 @@ resource "azurerm_kubernetes_cluster_node_pool" "self" {
       node_taints
     ]
   }
+}
+
+resource "azurerm_role_assignment" "aci-default-route" {
+  count = var.virtual_nodes.enabled ? 1 : 0
+
+  principal_id         = azurerm_kubernetes_cluster.self.identity[0].principal_id
+  role_definition_name = "Network Contributor"
+  scope                = "/subscriptions/${data.azurerm_client_config.self.subscription_id}/resourceGroups/${data.azurerm_resource_group.self.name}/providers/Microsoft.Network/virtualNetworks/${var.network.virtual_network_name}/subnets/${var.virtual_nodes.subnet_name}"
+}
+
+resource "azurerm_role_assignment" "aci-custom-route" {
+  count = var.network.user_defined_routing && var.virtual_nodes.enabled ? 1 : 0
+
+  principal_id         = azurerm_kubernetes_cluster.self.aci_connector_linux[0].connector_identity[0].object_id
+  role_definition_name = "Network Contributor"
+  scope                = "/subscriptions/${data.azurerm_client_config.self.subscription_id}/resourceGroups/${data.azurerm_resource_group.self.name}/providers/Microsoft.Network/virtualNetworks/${var.network.virtual_network_name}"
 }
