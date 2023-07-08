@@ -3,6 +3,8 @@ on:
   push:
     branches:
         - terradoc-poc
+    paths:
+        - '.github/workflow/terradocs.yml'
 
 jobs:
   update-docs:
