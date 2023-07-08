@@ -1,6 +1,8 @@
 name: "Generate terraform docs"
 on:
-    workflow_dispatch:
+    push:
+        branches:
+            - main
 
 jobs:
   update-docs:
