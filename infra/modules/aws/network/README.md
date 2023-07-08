@@ -1,3 +1,4 @@
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -48,3 +49,4 @@ No modules.
 |------|-------------|
 | <a name="output_private_subnets"></a> [private\_subnets](#output\_private\_subnets) | n/a |
 | <a name="output_public_subnets"></a> [public\_subnets](#output\_public\_subnets) | n/a |
+<!-- END_TF_DOCS -->
