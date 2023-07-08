@@ -13,6 +13,6 @@ jobs:
       - name: Render terraform docs inside the README.md and push changes back to PR branch
         uses: terraform-docs/gh-actions@v1.0.0
         with:
-            find-dir: ./infra/modules
+            find-dir: ./infra/modules,./infra/src
             output-method: replace
             git-push: true
