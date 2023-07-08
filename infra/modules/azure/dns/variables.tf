@@ -15,6 +15,13 @@ variable "is_public" {
   default = false
 }
 
+variable "system_managed_dns"{
+  type        = bool
+  description = "Determine if dns zone is managed by system"
+
+  default = true
+}
+
 variable "resource_group_name" {
   type        = string
   description = "Name of Azure resource group in which DNS zone resides."

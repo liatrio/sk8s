@@ -20,13 +20,14 @@ inputs = {
   resource_group_name = "sk8s-cluster"
   network_name        = "sk8s-cluster-vnet"
   address_space       = "10.1.0.0/16"
+  private_cluster     = false
   system_managed_dns  = false
   subnets             = [
     {
-      name           = "services"
+      name           = "cidr"
       address_prefix = "10.1.64.0/18"
       attributes     = {
-        routing  = "external"
+        routing  = "internal"
         managed  = true
         services = [ "aks" ]
       }
@@ -51,7 +52,7 @@ inputs = {
     },
     {
       name           = "extras"
-      address_prefix = "10.1.192.0/18"
+      address_prefix = "10.1.192.0/19"
       attributes     = {
         routing  = "internal"
         managed  = false
@@ -59,16 +60,6 @@ inputs = {
       }
     }
   ]
-  peering_connection = {
-    virtual_network_name = "sk8s-vnet"
-    subnet_name          = "primary"
-    resource_group       = "sk8s"
-  }
-  firewall = {
-    name           = "sk8s-firewall"
-
-    resource_group = "sk8s"
-  }
   tags = {
     project = "Sk8s"
     owner   = "GitHub Practice"
