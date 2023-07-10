@@ -21,6 +21,7 @@ variable "resource_group_name" {
 variable "private_cluster" {
   type        = bool
   description = "Determine whether aks cluster will be private or public"
+  default     = true
 }
 
 variable "private_zone_id" {

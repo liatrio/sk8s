@@ -8,7 +8,7 @@ remote_state {
     resource_group_name  = "sk8s"
     storage_account_name = "sk8sinfrastate"
     container_name       = "tfstate"
-    key                  = "test.tfstate"
+    key                  = "lockdown.tfstate"
   }
   generate = {
     path      = "backend.tf"
