@@ -18,6 +18,12 @@ variable "resource_group_name" {
   }
 }
 
+variable "private_cluster" {
+  type        = bool
+  description = "Determine whether aks cluster will be private or public"
+  default     = true
+}
+
 variable "private_zone_id" {
   type        = string
   description = "ID of private DNS zone for looking up container registry private endpoint."
@@ -25,13 +31,14 @@ variable "private_zone_id" {
 
 variable "network" {
   type = object({
+    virtual_network_name = string
+    subnet_id            = string
+    user_defined_routing = optional(bool, false)
     dns_service_ip       = string
     docker_bridge_cidr   = string
     plugin               = string
     pod_cidr             = optional(string)
     service_cidr         = string
-    subnet_id            = string
-    virtual_network_name = string
   })
 }
 
