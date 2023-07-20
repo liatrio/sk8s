@@ -22,6 +22,9 @@ No modules.
 |------|------|
 | [azurerm_kubernetes_cluster.self](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kubernetes_cluster) | resource |
 | [azurerm_kubernetes_cluster_node_pool.self](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kubernetes_cluster_node_pool) | resource |
+| [azurerm_log_analytics_solution.self](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/log_analytics_solution) | resource |
+| [azurerm_log_analytics_workspace.self](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/log_analytics_workspace) | resource |
+| [azurerm_monitor_diagnostic_setting.self](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_diagnostic_setting) | resource |
 | [azurerm_role_assignment.aci-custom-route](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
 | [azurerm_role_assignment.aci-default-route](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
 | [azurerm_client_config.self](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) | data source |
@@ -32,6 +35,7 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of Azure Container Registry. | `string` | n/a | yes |
+| <a name="input_container_insights_enabled"></a> [container\_insights\_enabled](#input\_container\_insights\_enabled) | n/a | `bool` | `true` | no |
 | <a name="input_default_node_pool"></a> [default\_node\_pool](#input\_default\_node\_pool) | n/a | <pre>object({<br>    auto_scaler_profile = object({<br>      enabled        = bool<br>      expander       = optional(string, "random")<br>      max_node_count = optional(number, 3)<br>      min_node_count = optional(number, 1)<br>    })<br>    node_count = optional(number, 3)<br>    node_size  = string<br>    zones      = optional(list(string))<br>  })</pre> | n/a | yes |
 | <a name="input_identity"></a> [identity](#input\_identity) | n/a | <pre>object({<br>    assignment  = string<br>    id          = optional(string)<br>  })</pre> | n/a | yes |
 | <a name="input_network"></a> [network](#input\_network) | n/a | <pre>object({<br>    virtual_network_name = string<br>    subnet_id            = string<br>    user_defined_routing = optional(bool, false)<br>    dns_service_ip       = string<br>    docker_bridge_cidr   = string<br>    plugin               = string<br>    pod_cidr             = optional(string)<br>    service_cidr         = string<br>  })</pre> | n/a | yes |
