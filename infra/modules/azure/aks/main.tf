@@ -43,6 +43,14 @@ resource "azurerm_kubernetes_cluster" "self" {
     }
   }
 
+  dynamic "oms_agent" {
+    for_each = var.container_insights_enabled ? [1] : []
+
+    content {
+      log_analytics_workspace_id = azurerm_log_analytics_workspace.self.0.id
+    }
+  }
+
   identity {
     type         = var.identity.assignment
     identity_ids = var.identity.assignment == "SystemAssigned" ? null : [var.identity.id]
@@ -97,4 +105,127 @@ resource "azurerm_role_assignment" "aci-custom-route" {
   principal_id         = azurerm_kubernetes_cluster.self.aci_connector_linux[0].connector_identity[0].object_id
   role_definition_name = "Network Contributor"
   scope                = "/subscriptions/${data.azurerm_client_config.self.subscription_id}/resourceGroups/${data.azurerm_resource_group.self.name}/providers/Microsoft.Network/virtualNetworks/${var.network.virtual_network_name}"
+}
+
+resource "azurerm_log_analytics_workspace" "self" {
+  count = var.container_insights_enabled ? 1 : 0
+
+  name                = "${data.azurerm_resource_group.self.name}-logs"
+  resource_group_name = data.azurerm_resource_group.self.name
+  location            = data.azurerm_resource_group.self.location
+  sku                 = "PerGB2018"
+  tags                = var.tags
+}
+
+resource "azurerm_log_analytics_solution" "self" {
+  count = var.container_insights_enabled ? 1 : 0
+
+  solution_name         = "ContainerInsights"
+  location              = azurerm_log_analytics_workspace.self.0.location
+  resource_group_name   = data.azurerm_resource_group.self.name
+  workspace_resource_id = azurerm_log_analytics_workspace.self.0.id
+  workspace_name        = azurerm_log_analytics_workspace.self.0.name
+
+  plan {
+    publisher = "Microsoft"
+    product   = "OMSGallery/ContainerInsights"
+  }
+
+  tags = var.tags
+
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
+}
+
+resource "azurerm_monitor_diagnostic_setting" "self" {
+  count = var.container_insights_enabled ? 1 : 0
+
+  name                       = "AKS Control Plane Logging"
+  target_resource_id         = azurerm_kubernetes_cluster.self.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.self.0.id
+
+  enabled_log {
+    category = "cloud-controller-manager"
+
+    retention_policy {
+      enabled = true
+      days    = 7
+    }
+  }
+
+  enabled_log {
+    category = "cluster-autoscaler"
+
+    retention_policy {
+      enabled = true
+      days    = 7
+    }
+  }
+
+  enabled_log {
+    category = "csi-azuredisk-controller"
+
+    retention_policy {
+      enabled = true
+      days    = 7
+    }
+  }
+
+  enabled_log {
+    category = "csi-azurefile-controller"
+
+    retention_policy {
+      enabled = true
+      days    = 7
+    }
+  }
+
+  enabled_log {
+    category = "csi-snapshot-controller"
+
+    retention_policy {
+      enabled = true
+      days    = 7
+    }
+  }
+
+  enabled_log {
+    category = "kube-apiserver"
+
+    retention_policy {
+      enabled = true
+      days    = 7
+    }
+  }
+
+  enabled_log {
+    category = "kube-controller-manager"
+
+    retention_policy {
+      enabled = true
+      days    = 7
+    }
+  }
+
+  enabled_log {
+    category = "kube-scheduler"
+
+    retention_policy {
+      enabled = true
+      days    = 7
+    }
+  }
+
+  metric {
+    category = "AllMetrics"
+    enabled  = false
+
+    retention_policy {
+      enabled = false
+      days    = 0
+    }
+  }
 }

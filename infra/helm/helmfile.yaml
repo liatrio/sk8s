@@ -12,12 +12,14 @@ releases:
   - name: autoscaler
     namespace: kube-system
     chart: autoscaler/cluster-autoscaler
-    version: 9.26.0
+    version: 9.29.1
     set:
       - name: cloudProvider
         value: aws
+      - name: awsRegion
+        value: "us-east-1"
       - name: autoDiscovery.clusterName
-        value: "ghest"
+        value: "ghest-dev"
 
   - name: cert-manager
     namespace: cert-manager
