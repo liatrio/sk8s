@@ -94,7 +94,7 @@ variable "identity" {
 
 variable "container_insights_enabled" {
   type    = bool
-  default = true
+  default = false
 }
 
 variable "tags" {
