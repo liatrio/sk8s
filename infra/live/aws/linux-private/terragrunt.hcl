@@ -1,11 +1,11 @@
 terraform {
-  source = "../../../src/aws"
+  source = "../../..//src/aws"
 }
 
 remote_state {
   backend = "s3"
   config  = {
-    bucket = "sk8s-tfstate-prod"
+    bucket = "sk8s-tfstate-private"
     key    = "terraform.tfstate"
     region = "us-east-1"
   }
@@ -16,7 +16,7 @@ remote_state {
 }
 
 inputs = {
-  network_name = "ghest-prod"
+  network_name = "ghest-dev"
 
   // The subnet range must generate at least twice the number of subnets as the number of availability zones specified.
   // So, for 3 AZs, we need 6 subnets (3 public + 3 private).
@@ -29,14 +29,16 @@ inputs = {
     "us-east-1c"
   ]
 
-  cluster_name = "ghest-prod"
+  cluster_name = "ghest-dev"
 
-  instance_type = "m6i.2xlarge"
-  disk_size     = 200
+  private_cluster = true
+
+  instance_type = "t3.large"
+  disk_size     = 100
 
   // The Project tag is required; we use it to generate unique IAM roles for the EKS cluster being created.
   tags = {
-    "Project"        = "GHESTProd"
-    "Environment"    = "Production"
+    "Project"        = "GHESTDev"
+    "Environment"    = "Development"
   }
 }

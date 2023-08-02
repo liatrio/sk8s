@@ -18,6 +18,10 @@ variable "cluster_name" {
   type = string
 }
 
+variable "private_cluster" {
+  type = bool
+}
+
 variable "instance_type" {
   type = string
 }

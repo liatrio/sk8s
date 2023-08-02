@@ -13,7 +13,7 @@ module "eks" {
   source = "../../modules/aws/eks"
 
   cluster_name    = var.cluster_name
-  is_private      = true
+  is_private      = var.private_cluster
   instance_type   = var.instance_type
   disk_size       = var.disk_size
   public_subnets  = module.network.public_subnets

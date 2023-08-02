@@ -51,12 +51,12 @@ variable "default_node_pool" {
       min_node_count = optional(number, 1)
     })
     node_count = optional(number, 3)
-    node_size  = string
-    zones      = optional(list(string))
+    node_size  = optional(string, "Standard_D2s_v3")
+    zones      = optional(list(string), ["1", "2", "3"])
   })
 }
 
-variable "node_pools" {
+variable "additional_node_pools" {
   type = map(object({
     auto_scaler_profile = object({
       enabled        = bool
@@ -64,13 +64,13 @@ variable "node_pools" {
       min_node_count = optional(number, 1)
     })
     node_count = optional(number, 3)
-    node_size  = string
+    node_size  = optional(string, "Standard_D2s_v3")
+    node_os    = optional(string, "Linux")
     priority   = object({
       spot_enabled = bool
       spot_price   = optional(number, -1)
     })
-    subnet_name = optional(string)
-    zones       = optional(list(string))
+    zones = optional(list(string), ["1", "2", "3"])
   }))
   default = {}
 }
