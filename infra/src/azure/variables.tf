@@ -65,6 +65,13 @@ variable "additional_node_pools" {
   default = {}
 }
 
+variable "container_insights_enabled" {
+  type        = bool
+  description = "Determine whether container insights will be enabled for the cluster"
+
+  default = false
+}
+
 variable "system_managed_dns"{
   type        = bool
   description = "Determine if dns zone is managed by system"

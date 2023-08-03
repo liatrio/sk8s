@@ -91,6 +91,8 @@ module "aks" {
   private_cluster     = var.private_cluster
   private_zone_id     = module.dns.zone_id == null ? "System" : module.dns.zone_id
 
+  container_insights_enabled = var.container_insights_enabled
+
   network = {
     virtual_network_name = module.network.virtual_network_name
     subnet_id            = var.firewall == null ? module.network.subnets["nodes"].id : module.firewall.route_table_id
@@ -113,4 +115,6 @@ module "aks" {
     enabled     = true
     subnet_name = "aci"
   }
+
+  tags = var.tags
 }
