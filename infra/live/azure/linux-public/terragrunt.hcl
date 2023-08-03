@@ -64,4 +64,5 @@ inputs = {
     project = "Sk8s"
     owner   = "GitHub Practice"
   }
+  container_insights_enabled = true
 }
