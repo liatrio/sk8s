@@ -19,6 +19,59 @@ variable "private_cluster" {
   default     = true
 }
 
+variable "default_node_pool" {
+  type = object({
+    auto_scaler_profile = object({
+      enabled        = bool
+      expander       = optional(string, "random")
+      max_node_count = optional(number, 3)
+      min_node_count = optional(number, 1)
+    })
+    node_count = optional(number, 3)
+    node_size  = string
+    zones      = optional(list(string))
+  })
+  description = "Default node pool configuration"
+
+  default = {
+    auto_scaler_profile = {
+      enabled        = true
+      max_node_count = 9
+      min_node_count = 3
+    }
+    node_size = "Standard_D2s_v3"
+    zones     = ["1", "2", "3"]
+  }
+}
+
+variable "additional_node_pools" {
+  type = map(object({
+    auto_scaler_profile = object({
+      enabled        = bool
+      max_node_count = optional(number, 3)
+      min_node_count = optional(number, 1)
+    })
+    node_count = optional(number, 3)
+    node_size  = optional(string, "Standard_D2s_v3")
+    node_os    = optional(string, "Linux")
+    priority   = object({
+      spot_enabled = bool
+      spot_price   = optional(number, -1)
+    })
+    zones = optional(list(string), ["1", "2", "3"])
+  }))
+  description = "Additional node pools to create"
+
+  default = {}
+}
+
+variable "container_insights_enabled" {
+  type        = bool
+  description = "Determine whether container insights will be enabled for the cluster"
+
+  default = false
+}
+
 variable "system_managed_dns"{
   type        = bool
   description = "Determine if dns zone is managed by system"

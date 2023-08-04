@@ -5,7 +5,7 @@ terraform {
 remote_state {
   backend = "s3"
   config  = {
-    bucket = "sk8s-tfstate-dev"
+    bucket = "sk8s-tfstate-public"
     key    = "terraform.tfstate"
     region = "us-east-1"
   }
@@ -20,8 +20,8 @@ inputs = {
 
   // The subnet range must generate at least twice the number of subnets as the number of availability zones specified.
   // So, for 3 AZs, we need 6 subnets (3 public + 3 private).
-  cidr_block   = "172.27.0.0/21"
-  subnet_range = 24
+  cidr_block   = "172.27.0.0/18"
+  subnet_range = 21
 
   availability_zones = [
     "us-east-1a",
@@ -30,6 +30,8 @@ inputs = {
   ]
 
   cluster_name = "ghest-dev"
+
+  private_cluster = false
 
   instance_type = "t3.large"
   disk_size     = 100

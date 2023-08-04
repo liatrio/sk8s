@@ -8,7 +8,7 @@ remote_state {
     resource_group_name  = "sk8s"
     storage_account_name = "sk8sinfrastate"
     container_name       = "tfstate"
-    key                  = "private.tfstate"
+    key                  = "public.tfstate"
   }
   generate = {
     path      = "backend.tf"
@@ -20,7 +20,7 @@ inputs = {
   resource_group_name = "sk8s-cluster"
   network_name        = "sk8s-cluster-vnet"
   address_space       = "10.1.0.0/16"
-  private_cluster     = true
+  private_cluster     = false
   system_managed_dns  = false
   subnets             = [
     {
@@ -58,33 +58,25 @@ inputs = {
         managed  = false
         services = [ "acr" ]
       }
-    },
-    {
-      name           = "GatewaySubnet"
-      address_prefix = "10.1.224.0/24"
-      attributes     = {
-        routing  = "external"
-        managed  = false
-        services = [ "gateway" ]
-      }
-    },
-    {
-      name           = "AzureFirewallSubnet"
-      address_prefix = "10.1.225.0/24"
-      attributes     = {
-        routing  = "external"
-        managed  = false
-        services = [ "firewall" ]
-      }
     }
   ]
-  vpn-gateway = {
-    name = "sk8s-vpn-gateway"
-    address_space = "10.7.0.0/24"
-    tenant_id = ""
+  additional_node_pools = {
+    "win" = {
+      auto_scaler_profile = {
+        enabled        = true
+        max_node_count = 3
+        min_node_count = 1
+      }
+      node_size  = "Standard_D2s_v3"
+      node_os    = "Windows"
+      priority   = {
+        spot_enabled = false
+      }
+    }
   }
   tags = {
     project = "Sk8s"
     owner   = "GitHub Practice"
   }
+  container_insights_enabled = true
 }

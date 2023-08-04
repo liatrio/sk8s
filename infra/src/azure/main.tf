@@ -91,6 +91,8 @@ module "aks" {
   private_cluster     = var.private_cluster
   private_zone_id     = module.dns.zone_id == null ? "System" : module.dns.zone_id
 
+  container_insights_enabled = var.container_insights_enabled
+
   network = {
     virtual_network_name = module.network.virtual_network_name
     subnet_id            = var.firewall == null ? module.network.subnets["nodes"].id : module.firewall.route_table_id
@@ -102,31 +104,8 @@ module "aks" {
     service_cidr         = local.managed_subnets[0].address_prefix
   }
 
-  default_node_pool = {
-    auto_scaler_profile = {
-      enabled        = true
-      max_node_count = 9
-      min_node_count = 3
-    }
-    node_size  = "Standard_D2s_v3"
-    zones      = ["1", "2", "3"]
-  }
-
-  # node_pools = {
-  #   spot = {
-  #     auto_scaler_profile = {
-  #       enabled        = true
-  #       max_node_count = 3
-  #       min_node_count = 1
-  #     }
-  #     node_size  = "Standard_D2s_v3"
-  #     zones      = ["1", "2", "3"]
-  #     priority   = {
-  #       spot_enabled = true
-  #       spot_price   = -1
-  #     }
-  #   }
-  # }
+  default_node_pool     = var.default_node_pool
+  additional_node_pools = var.additional_node_pools
 
   identity = {
     assignment = "SystemAssigned"
@@ -136,4 +115,6 @@ module "aks" {
     enabled     = true
     subnet_name = "aci"
   }
+
+  tags = var.tags
 }
