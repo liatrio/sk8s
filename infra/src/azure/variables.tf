@@ -72,7 +72,7 @@ variable "container_insights_enabled" {
   default = false
 }
 
-variable "system_managed_dns"{
+variable "system_managed_dns" {
   type        = bool
   description = "Determine if dns zone is managed by system"
 
@@ -83,10 +83,10 @@ variable "subnets" {
   type = list(object({
     name           = string
     address_prefix = string
-    attributes     = object({
-       routing     = string
-       managed     = bool
-       services    = list(string)
+    attributes = object({
+      routing  = string
+      managed  = bool
+      services = list(string)
     })
   }))
   description = "List of subnets to create in the virtual network."
@@ -115,11 +115,11 @@ variable "firewall" {
 
 variable "network_rules" {
   type = list(object({
-      name                  = string
-      protocols             = list(string)
-      source_addresses      = list(string)
-      destination_addresses = list(string)
-      destination_ports     = list(string)
+    name                  = string
+    protocols             = list(string)
+    source_addresses      = list(string)
+    destination_addresses = list(string)
+    destination_ports     = list(string)
   }))
   description = "List of network rules to be passed into the firewall policy"
 
@@ -131,7 +131,7 @@ variable "application_rules" {
     name              = string
     source_addresses  = list(string)
     destination_fqdns = list(string)
-    protocols         = object({
+    protocols = object({
       port = string
       type = string
     })
@@ -142,14 +142,14 @@ variable "application_rules" {
 }
 
 variable "vpn-gateway" {
-    type = object({
-      name          = string
-      address_space = string
-      tenant_id     = string
-    })
-    description = "Vpn-gateway configuration to connect to the cluster"
+  type = object({
+    name          = string
+    address_space = string
+    tenant_id     = string
+  })
+  description = "Vpn-gateway configuration to connect to the cluster"
 
-    default = null
+  default = null
 }
 
 variable "tags" {
