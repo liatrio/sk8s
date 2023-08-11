@@ -23,7 +23,6 @@ env:
   TF_VERSION: 1.4.6
   TG_VERSION: 0.48.7
   TG_DIR: infra/live/azure/linux-public/
-  TERRAGRUNT_NON_INTERACTIVE: true
 
 jobs:
   create:
@@ -84,23 +83,7 @@ jobs:
           tg_version: ${{ env.TG_VERSION }}
           tg_dir: ${{ env.TG_DIR }}
           tg_command: show -no-color plan.out
-
-      - name: Add PR Comment
-        uses: actions/github-script@v6.4.1
-        with:
-          script: |
-            const fs = require('fs');
-            const output = `
-            #### Terragrunt Plan \`${{ steps.terragrunt_show.outputs.tg_action_output }}\`
-            <details><summary>Show Plan</summary>
-            \`\`\`${fs.readFileSync('${{ env.TG_DIR }}/plan.txt')}\`\`\`
-            </details>`;
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
+          tg_comment: 1
 
       # - name: Terragrunt Apply
       #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
