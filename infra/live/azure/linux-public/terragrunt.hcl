@@ -47,7 +47,7 @@ inputs = {
       attributes = {
         routing  = "external"
         managed  = false
-        services = ["aks"] 
+        services = ["aks"]
       }
     },
     {
