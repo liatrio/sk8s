@@ -5,10 +5,12 @@ on:
     branches: [ 'main' ]
     paths:
       - "**/azure/**"
+      - ".github/workflows/azure-terraform.yml"
   pull_request:
     branches: [ 'main' ]
     paths:
       - "**/azure/**"
+      - ".github/workflows/azure-terraform.yml"
 
 permissions:
   pull-requests: write
