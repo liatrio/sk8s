@@ -54,7 +54,7 @@ variable "additional_node_pools" {
     node_count = optional(number, 3)
     node_size  = optional(string, "Standard_D2s_v3")
     node_os    = optional(string, "Linux")
-    priority   = object({
+    priority = object({
       spot_enabled = bool
       spot_price   = optional(number, -1)
     })

@@ -26,7 +26,7 @@ module "firewall" {
   firewall              = var.firewall
   association_subnet_id = module.network.subnets[local.association_subnets[0].name].id
   application_rules     = var.application_rules
-  network_rules         = var.network_rules 
+  network_rules         = var.network_rules
   network = {
     virtual_network_name = module.network.virtual_network_name
     subnet_name          = length(local.firewall_subnet) > 0 ? local.firewall_subnet[0].name : null
