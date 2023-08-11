@@ -92,9 +92,9 @@ jobs:
             const output = `
             #### Terragrunt Plan \`${{ steps.terragrunt_show.outcome }}\`
             <details><summary>Show Plan</summary>
-            \`\`\`test\`\`\`
+            \`\`\`${{ steps.terragrunt_show.outputs.tg_action_output }}\`\`\`
             </details>`;
-            github.issues.createComment({
+            github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
