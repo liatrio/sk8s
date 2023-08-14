@@ -86,6 +86,7 @@ jobs:
 
       - name: url decode plan output
         id: url_decode
+        shell: bash
         run: |
           output=${{ steps.terragrunt_show.outputs.tg_action_output }}
           output="${output//'%25'/'%'}"
