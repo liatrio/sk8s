@@ -87,8 +87,12 @@ jobs:
       - name: url decode plan output
         id: url_decode
         run: |
-          echo "::set-output name=tg_action_output::$(echo ${{ steps.terragrunt_show.outputs.tg_action_output }} | sed -e 's/%/\\x/g')"
-          echo ${{ steps.terragrunt_show.outputs.tg_action_output }} | sed -e 's/%/\\x/g' >> $GITHUB_OUTPUT
+          output = ${{ steps.terragrunt_show.outputs.tg_action_output }}
+          output = "${output//'%25'/'%'}"
+          output = "${output//'%0A'/$'\n'}"
+          output = "${output//'%0D'/$'\r'}"
+          output = "${output//'%3C'/$'<'}"
+          echo "::set-output name=tg_action_output::$output"
         
       - name: Add PR Comment
         uses: actions/github-script@v6.4.1
