@@ -84,6 +84,8 @@ jobs:
           tg_dir: ${{ env.TG_DIR }}
           tg_command: show -no-color plan.out
           tg_comment: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # - name: Add PR Comment
       #   uses: actions/github-script@v6.4.1
