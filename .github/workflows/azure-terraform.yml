@@ -87,11 +87,11 @@ jobs:
       - name: url decode plan output
         id: url_decode
         run: |
-          output = ${{ steps.terragrunt_show.outputs.tg_action_output }}
-          output = "${output//'%25'/'%'}"
-          output = "${output//'%0A'/$'\n'}"
-          output = "${output//'%0D'/$'\r'}"
-          output = "${output//'%3C'/$'<'}"
+          output=${{ steps.terragrunt_show.outputs.tg_action_output }}
+          output="${output//'%25'/'%'}"
+          output="${output//'%0A'/$'\n'}"
+          output="${output//'%0D'/$'\r'}"
+          output="${output//'%3C'/$'<'}"
           echo "::set-output name=tg_action_output::$output"
         
       - name: Add PR Comment
