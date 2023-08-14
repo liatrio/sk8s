@@ -83,23 +83,24 @@ jobs:
           tg_version: ${{ env.TG_VERSION }}
           tg_dir: ${{ env.TG_DIR }}
           tg_command: show -no-color plan.out
+          tg_comment: true
 
-      - name: Add PR Comment
-        uses: actions/github-script@v6.4.1
-        with:
-          script: |
-            const fs = require('fs');
-            const output = `
-            #### Terragrunt Plan \`${{ steps.terragrunt_show.outcome }}\`
-            <details><summary>Show Plan</summary>
-            \`\`\`${decodeURI(${{ steps.terragrunt_show.outputs.tg_action_output }})}\`\`\`
-            </details>`;
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
+      # - name: Add PR Comment
+      #   uses: actions/github-script@v6.4.1
+      #   with:
+      #     script: |
+      #       const fs = require('fs');
+      #       const output = `
+      #       #### Terragrunt Plan \`${{ steps.terragrunt_show.outcome }}\`
+      #       <details><summary>Show Plan</summary>
+      #       \`\`\`${decodeURI(${{ steps.terragrunt_show.outputs.tg_action_output }})}\`\`\`
+      #       </details>`;
+      #       github.rest.issues.createComment({
+      #         issue_number: context.issue.number,
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         body: output
+      #       })
 
       # - name: Terragrunt Apply
       #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
