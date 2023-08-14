@@ -83,7 +83,7 @@ jobs:
           tg_version: ${{ env.TG_VERSION }}
           tg_dir: ${{ env.TG_DIR }}
           tg_command: show -no-color plan.out
-          tg_comment: true
+          tg_comment: '1'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
