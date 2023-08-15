@@ -69,7 +69,7 @@ inputs = {
       }
       node_size = "Standard_D2s_v3"
       node_os   = "Linux"
-      priority  = {
+      priority = {
         spot_enabled = false
       }
       labels = {
