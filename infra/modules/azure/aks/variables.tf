@@ -45,7 +45,7 @@ variable "network" {
 variable "default_node_pool" {
   type = object({
     auto_scaler_profile = object({
-      enabled        = bool
+      enabled        = optional(bool, true)
       expander       = optional(string, "random")
       max_node_count = optional(number, 3)
       min_node_count = optional(number, 1)
@@ -53,6 +53,7 @@ variable "default_node_pool" {
     node_count = optional(number, 3)
     node_size  = optional(string, "Standard_D2s_v3")
     zones      = optional(list(string), ["1", "2", "3"])
+    labels     = optional(map(string), {})
   })
 }
 
@@ -70,7 +71,8 @@ variable "additional_node_pools" {
       spot_enabled = bool
       spot_price   = optional(number, -1)
     })
-    zones = optional(list(string), ["1", "2", "3"])
+    zones       = optional(list(string), ["1", "2", "3"])
+    node_labels = optional(map(string), {})
   }))
   default = {}
 }

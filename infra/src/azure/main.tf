@@ -22,12 +22,12 @@ locals {
 module "firewall" {
   source = "../../modules/azure/firewall"
 
-  resource_group_name    = var.resource_group_name
-  firewall               = var.firewall
-  association_subnet_id  = module.network.subnets[local.association_subnets[0].name].id
-  application_rules      = var.application_rules
-  network_rules          = var.network_rules 
-  network                = {
+  resource_group_name   = var.resource_group_name
+  firewall              = var.firewall
+  association_subnet_id = module.network.subnets[local.association_subnets[0].name].id
+  application_rules     = var.application_rules
+  network_rules         = var.network_rules
+  network = {
     virtual_network_name = module.network.virtual_network_name
     subnet_name          = length(local.firewall_subnet) > 0 ? local.firewall_subnet[0].name : null
     subnet_id            = length(local.firewall_subnet) > 0 ? (local.firewall_subnet[0].attributes.managed ? null : module.network.subnets[local.firewall_subnet[0].name].id) : null
@@ -39,14 +39,14 @@ locals {
   gateway_subnet = [for subnet in var.subnets : subnet if contains(subnet.attributes.services, "gateway")]
 }
 
-module "vpn-gateway"{
+module "vpn-gateway" {
   source = "../../modules/azure/vpn-gateway"
 
   resource_group_name = var.resource_group_name
   vpn-gateway         = var.vpn-gateway
   tags                = var.tags
 
-  network                = {
+  network = {
     virtual_network_name = module.network.virtual_network_name
     subnet_id            = length(local.gateway_subnet) > 0 ? module.network.subnets[local.gateway_subnet[0].name].id : null
     managed              = length(local.gateway_subnet) > 0 ? local.gateway_subnet[0].attributes.managed : null
@@ -72,14 +72,14 @@ module "acr" {
   container_registry_name = "sk8simgs"
   resource_group_name     = var.resource_group_name
   private_zone_id         = module.dns.zone_id == null ? "System" : module.dns.zone_id
-  network                 = {
+  network = {
     virtual_network_name = module.network.virtual_network_name
     resource_group       = var.resource_group_name
     subnet_id            = module.network.subnets[local.subnets[0].name].id
   }
 }
 
-locals{
+locals {
   managed_subnets = [for subnet in var.subnets : subnet if subnet.attributes.managed]
 }
 

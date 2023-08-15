@@ -24,6 +24,18 @@ resource "azurerm_subnet" "self" {
   resource_group_name  = data.azurerm_resource_group.self.name
   virtual_network_name = azurerm_virtual_network.self.name
   address_prefixes     = [var.subnets[count.index].address_prefix]
+
+  dynamic "delegation" {
+    for_each = var.subnets[count.index].name == "aci" ? [1] : []
+
+    content {
+      name = "aciDelegation"
+      service_delegation {
+        name    = "Microsoft.ContainerInstance/containerGroups"
+        actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
+      }
+    }
+  }
 }
 
 locals{ #ignore firewall and gateway subnets for security group association
