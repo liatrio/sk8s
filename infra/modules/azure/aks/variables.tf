@@ -72,7 +72,7 @@ variable "additional_node_pools" {
       spot_price   = optional(number, -1)
     })
     zones       = optional(list(string), ["1", "2", "3"])
-    node_labels = map(string)
+    node_labels = optional(map(string), {})
   }))
   default = {}
 }
