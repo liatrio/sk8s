@@ -68,7 +68,7 @@ inputs = {
         min_node_count = 1
       }
       node_size  = "Standard_D2s_v3"
-      node_os    = "Windows"
+      node_os    = "Linux"
       priority   = {
         spot_enabled = false
       }
