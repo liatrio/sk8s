@@ -72,7 +72,7 @@ inputs = {
       priority = {
         spot_enabled = false
       }
-      labels = {
+      node_labels = {
         "environment" = "build"
       }
     }
