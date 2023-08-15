@@ -23,6 +23,7 @@ resource "azurerm_kubernetes_cluster" "self" {
     node_count             = var.default_node_pool.auto_scaler_profile.enabled ? null : var.default_node_pool.node_count
     max_count              = var.default_node_pool.auto_scaler_profile.enabled ? var.default_node_pool.auto_scaler_profile.max_node_count : null
     zones                  = var.default_node_pool.zones
+    node_labels            = var.default_node_pool.labels
     # enable_host_encryption = true <- this needs to be enabled at the subscription level first
     tags                   = var.tags
   }
@@ -79,6 +80,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "self" {
   node_count            = each.value.auto_scaler_profile.enabled ? null : each.value.node_count
   max_count             = each.value.auto_scaler_profile.enabled ? each.value.auto_scaler_profile.max_node_count : null
   zones                 = each.value.zones
+  node_labels           = each.value.labels
   # enable_host_encryption = true <- not enabled at the subscription level
   priority              = each.value.priority.spot_enabled ? "Spot" : "Regular"
   spot_max_price        = each.value.priority.spot_enabled ? each.value.priority.spot_price : null

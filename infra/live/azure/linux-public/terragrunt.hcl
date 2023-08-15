@@ -60,6 +60,23 @@ inputs = {
       }
     }
   ]
+  additional_node_pools = {
+    "builds" = {
+      auto_scaler_profile = {
+        enabled        = true
+        max_node_count = 3
+        min_node_count = 1
+      }
+      node_size  = "Standard_D2s_v3"
+      node_os    = "Windows"
+      priority   = {
+        spot_enabled = false
+      }
+      labels = {
+        "environment" = "build"
+      }
+    }
+  }
   tags = {
     project = "Sk8s"
     owner   = "GitHub Practice"
