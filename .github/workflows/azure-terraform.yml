@@ -78,60 +78,20 @@ jobs:
       - name: Terraform Show
         id: terragrunt_show
         uses: gruntwork-io/terragrunt-action@v1.0.7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tf_version: ${{ env.TF_VERSION }}
           tg_version: ${{ env.TG_VERSION }}
           tg_dir: ${{ env.TG_DIR }}
           tg_command: show -no-color plan.out
+          tg_comment: '1'
 
-      - name: url decode plan output
-        id: url_decode
-        shell: bash
-        run: |
-          output="${{ steps.terragrunt_show.outputs.tg_action_output }}"
-          output="${output//'%25'/'%'}"
-          output="${output//'%0A'/$'\n'}"
-          output="${output//'%0D'/$'\r'}"
-          output="${output//'%3C'/$'<'}"
-          echo "::set-output name=tg_action_output::$output"
-        
-      - name: Add PR Comment
-        uses: actions/github-script@v6.4.1
+      - name: Terragrunt Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: gruntwork-io/terragrunt-action@v1.0.7
         with:
-          script: |
-            const fs = require('fs');
-            const output = `
-            #### Terragrunt Plan \`${{ steps.terragrunt_show.outcome }}\`
-            <details><summary>Show Plan</summary>
-            \`\`\`${{ steps.url_decode.outputs.tg_action_output }}\`\`\`
-            </details>`;
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
-
-      # - name: Terragrunt Apply
-      #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      #   uses: gruntwork-io/terragrunt-action@v1.0.7
-      #   with:
-      #     tf_version: ${{ env.TF_VERSION }}
-      #     tg_version: ${{ env.TG_VERSION }}
-      #     tg_dir: ${{ env.TG_DIR }}
-      #     tg_command: apply
-      
-    # - name: azure cli call to check cluster status
-    #   id: cluster-status
-    #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    #   run: |
-    #     status=$(az aks show --name "sk8s" --resource-group "sk8s-cluster" | jq '.provisioningState')
-    #     echo "status=$status" >> $GITHUB_OUTPUT
-        
-    # - name: Terraform Destroy
-    #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    #   run: terragrunt destroy -auto-approve
-      
-    # - name: check successful deployment or fail
-    #   if: github.ref == 'refs/heads/main' && github.event_name == 'push' && steps.cluster-status.outputs.status != '"Succeeded"'
-    #   run: exit 1
+          tf_version: ${{ env.TF_VERSION }}
+          tg_version: ${{ env.TG_VERSION }}
+          tg_dir: ${{ env.TG_DIR }}
+          tg_command: apply
