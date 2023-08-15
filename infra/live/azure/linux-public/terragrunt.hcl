@@ -67,9 +67,9 @@ inputs = {
         max_node_count = 3
         min_node_count = 1
       }
-      node_size  = "Standard_D2s_v3"
-      node_os    = "Linux"
-      priority   = {
+      node_size = "Standard_D2s_v3"
+      node_os   = "Linux"
+      priority  = {
         spot_enabled = false
       }
       labels = {
