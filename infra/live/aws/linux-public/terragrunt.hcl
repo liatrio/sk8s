@@ -4,7 +4,7 @@ terraform {
 
 remote_state {
   backend = "s3"
-  config  = {
+  config = {
     bucket = "sk8s-tfstate-public"
     key    = "terraform.tfstate"
     region = "us-east-1"
@@ -38,7 +38,7 @@ inputs = {
 
   // The Project tag is required; we use it to generate unique IAM roles for the EKS cluster being created.
   tags = {
-    "Project"        = "GHESTDev"
-    "Environment"    = "Development"
+    "Project"     = "GHESTDev"
+    "Environment" = "Development"
   }
 }

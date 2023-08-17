@@ -12,86 +12,11 @@ on:
       - "**/azure/**"
       - ".github/workflows/azure-terraform.yml"
 
-permissions:
-  pull-requests: write
-
-env:
-  ARM_CLIENT_ID: ${{ secrets.CLIENT_ID }}
-  ARM_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-  ARM_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
-  ARM_TENANT_ID: ${{ secrets.TENANT_ID }}
-  TF_VERSION: 1.4.6
-  TG_VERSION: 0.48.7
-  TG_DIR: infra/live/azure/linux-public/
-
 jobs:
   create:
     name: Create AKS Cluster
-    runs-on: ubuntu-latest
-    environment: azure
-
-    steps:
-      - name: Checkout Codebase
-        uses: actions/checkout@v3.5.3
-
-      - name: Terraform Init
-        uses: gruntwork-io/terragrunt-action@v1.0.7
-        with:
-          tf_version: ${{ env.TF_VERSION }}
-          tg_version: ${{ env.TG_VERSION }}
-          tg_dir: ${{ env.TG_DIR }}
-          tg_command: init
-
-      - name: Terragrunt HCL Format
-        uses: gruntwork-io/terragrunt-action@v1.0.7
-        with:
-          tf_version: ${{ env.TF_VERSION }}
-          tg_version: ${{ env.TG_VERSION }}
-          tg_dir: ${{ env.TG_DIR }}
-          tg_command: hclfmt --terragrunt-check --terragrunt-diff
-
-      - name: Terraform Format
-        uses: gruntwork-io/terragrunt-action@v1.0.7
-        with:
-          tf_version: ${{ env.TF_VERSION }}
-          tg_version: ${{ env.TG_VERSION }}
-          tg_dir: ${{ env.TG_DIR }}
-          tg_command: fmt -check -diff -recursive
-
-      - name: Terraform Validate
-        uses: gruntwork-io/terragrunt-action@v1.0.7
-        with:
-          tf_version: ${{ env.TF_VERSION }}
-          tg_version: ${{ env.TG_VERSION }}
-          tg_dir: ${{ env.TG_DIR }}
-          tg_command: validate
-
-      - name: Terraform Plan
-        id: terragrunt_plan
-        uses: gruntwork-io/terragrunt-action@v1.0.7
-        with:
-          tf_version: ${{ env.TF_VERSION }}
-          tg_version: ${{ env.TG_VERSION }}
-          tg_dir: ${{ env.TG_DIR }}
-          tg_command: plan -out plan.out
-
-      - name: Terraform Show
-        id: terragrunt_show
-        uses: gruntwork-io/terragrunt-action@v1.0.7
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tf_version: ${{ env.TF_VERSION }}
-          tg_version: ${{ env.TG_VERSION }}
-          tg_dir: ${{ env.TG_DIR }}
-          tg_command: show -no-color plan.out
-          tg_comment: '1'
-
-      - name: Terragrunt Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        uses: gruntwork-io/terragrunt-action@v1.0.7
-        with:
-          tf_version: ${{ env.TF_VERSION }}
-          tg_version: ${{ env.TG_VERSION }}
-          tg_dir: ${{ env.TG_DIR }}
-          tg_command: apply
+    uses: ./.github/workflows/create-cluster.yml
+    secrets: inherit
+    with:
+      cloud_provider: azure
+      config_path: infra/live/azure/linux-public/
