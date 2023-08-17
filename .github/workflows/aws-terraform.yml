@@ -4,13 +4,13 @@ on:
   push:
     branches: [ 'main' ]
     paths:
-      - "**/azure/**"
-      - ".github/workflows/azure-terraform.yml"
+      - "**/aws/**"
+      - ".github/workflows/aws-terraform.yml"
   pull_request:
     branches: [ 'main' ]
     paths:
-      - "**/azure/**"
-      - ".github/workflows/azure-terraform.yml"
+      - "**/aws/**"
+      - ".github/workflows/aws-terraform.yml"
 
 jobs:
   create:
