@@ -58,11 +58,6 @@ on:
         description: ''
         required: false
 
-permissions:
-  contents: read
-  id-token: write
-  pull-requests: write
-
 env:
   ARM_CLIENT_ID: ${{ secrets.CLIENT_ID || '' }}
   ARM_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET || '' }}

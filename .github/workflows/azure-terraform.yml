@@ -12,6 +12,11 @@ on:
       - "**/azure/**"
       - ".github/workflows/azure-terraform.yml"
 
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: write
+
 jobs:
   create:
     name: Create AKS Cluster
