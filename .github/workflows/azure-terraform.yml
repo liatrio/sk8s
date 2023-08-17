@@ -17,9 +17,5 @@ jobs:
     name: Create AKS Cluster
     uses: ./.github/workflows/create-cluster.yml
     with:
-      azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
-      azure_client_secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-      azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
       cloud_provider: azure
       config_path: infra/live/azure/linux-public/
