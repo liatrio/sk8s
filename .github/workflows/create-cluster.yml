@@ -1,0 +1,153 @@
+name: Create Kubernetes Cluster
+
+on:
+  workflow_call:
+    inputs:
+      aws_iam_role:
+        description: ''
+        required: false
+        type: string
+      aws_region:
+        description: ''
+        required: false
+        type: string
+      aws_session_name:
+        description: ''
+        required: false
+        type: string
+      cloud_provider:
+        description: ''
+        required: true
+        type: string
+      config_path:
+        description: ''
+        required: true
+        type: string
+      runner_label:
+        description: ''
+        required: false
+        type: string
+        default: 'ubuntu-latest'
+      terraform_version:
+        description: ''
+        required: false
+        type: string
+        default: '1.4.6'
+      terragrunt_version:
+        description: ''
+        required: false
+        type: string
+        default: '0.48.7'
+    secrets:
+      aws_access_key_id:
+        description: ''
+        required: false
+      aws_secret_access_key:
+        description: ''
+        required: false
+      azure_client_id:
+        description: ''
+        required: false
+      azure_client_secret:
+        description: ''
+        required: false
+      azure_subscription_id:
+        description: ''
+        required: false
+      azure_tenant_id:
+        description: ''
+        required: false
+
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: write
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.CLIENT_ID || '' }}
+  ARM_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET || '' }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID || '' }}
+  ARM_TENANT_ID: ${{ secrets.TENANT_ID || '' }}
+  TF_VERSION: ${{ inputs.terraform_version }}
+  TG_VERSION: ${{ inputs.terragrunt_version }}
+  TG_DIR: ${{ inputs.config_path }}
+
+jobs:
+  create:
+    name: Create AKS Cluster
+    runs-on: ${{ inputs.runner_label }}
+    environment: ${{ inputs.cloud_provider }}
+
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v3.5.3
+
+      - name: Configure AWS Credentials For GitHub Actions
+        uses: aws-actions/configure-aws-credentials@v2
+        if: inputs.cloud_provider == 'aws'
+        with:
+          aws-region: us-east-1
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Terraform Init
+        uses: gruntwork-io/terragrunt-action@v1.0.7
+        with:
+          tf_version: ${{ env.TF_VERSION }}
+          tg_version: ${{ env.TG_VERSION }}
+          tg_dir: ${{ env.TG_DIR }}
+          tg_command: init
+
+      - name: Terragrunt HCL Format
+        uses: gruntwork-io/terragrunt-action@v1.0.7
+        with:
+          tf_version: ${{ env.TF_VERSION }}
+          tg_version: ${{ env.TG_VERSION }}
+          tg_dir: ${{ env.TG_DIR }}
+          tg_command: hclfmt --terragrunt-check --terragrunt-diff
+
+      - name: Terraform Format
+        uses: gruntwork-io/terragrunt-action@v1.0.7
+        with:
+          tf_version: ${{ env.TF_VERSION }}
+          tg_version: ${{ env.TG_VERSION }}
+          tg_dir: ${{ env.TG_DIR }}
+          tg_command: fmt -check -diff -recursive
+
+      - name: Terraform Validate
+        uses: gruntwork-io/terragrunt-action@v1.0.7
+        with:
+          tf_version: ${{ env.TF_VERSION }}
+          tg_version: ${{ env.TG_VERSION }}
+          tg_dir: ${{ env.TG_DIR }}
+          tg_command: validate
+
+      - name: Terraform Plan
+        id: terragrunt_plan
+        uses: gruntwork-io/terragrunt-action@v1.0.7
+        with:
+          tf_version: ${{ env.TF_VERSION }}
+          tg_version: ${{ env.TG_VERSION }}
+          tg_dir: ${{ env.TG_DIR }}
+          tg_command: plan -out plan.out
+
+      - name: Terraform Show
+        id: terragrunt_show
+        uses: gruntwork-io/terragrunt-action@v1.0.7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tf_version: ${{ env.TF_VERSION }}
+          tg_version: ${{ env.TG_VERSION }}
+          tg_dir: ${{ env.TG_DIR }}
+          tg_command: show -no-color plan.out
+          tg_comment: '1'
+
+      - name: Terragrunt Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: gruntwork-io/terragrunt-action@v1.0.7
+        with:
+          tf_version: ${{ env.TF_VERSION }}
+          tg_version: ${{ env.TG_VERSION }}
+          tg_dir: ${{ env.TG_DIR }}
+          tg_command: apply
