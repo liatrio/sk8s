@@ -50,7 +50,7 @@ env:
 
 jobs:
   create:
-    name: Create AKS Cluster
+    name: Create Cluster
     runs-on: ${{ inputs.runner_label }}
     environment: ${{ inputs.cloud_provider }}
 
