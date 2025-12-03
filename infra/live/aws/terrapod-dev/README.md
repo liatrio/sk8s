@@ -9,8 +9,11 @@ terrapod-dev/
 ├── terragrunt.hcl          # Parent config with shared settings
 ├── ecr/                    # Elastic Container Registry
 │   └── terragrunt.hcl
-└── s3/                     # S3 bucket for data storage
-    └── terragrunt.hcl
+├── s3/                     # S3 bucket for data storage
+│   └── terragrunt.hcl
+└── irsa/                   # IAM Roles for Service Accounts
+    └── s3/                 # S3 access role
+        └── terragrunt.hcl
 ```
 
 ## Usage
@@ -41,15 +44,24 @@ terragrunt plan
 terragrunt apply
 ```
 
+**IRSA for S3:**
+```bash
+cd sk8s/infra/live/aws/terrapod-dev/irsa/s3
+terragrunt init
+terragrunt plan
+terragrunt apply
+```
+
 ### Destroy Resources
 
 ```bash
-# Destroy all
+# Destroy all (note: destroy in reverse dependency order)
 terragrunt run-all destroy
 
-# Destroy individual
-cd ecr && terragrunt destroy
+# Destroy individual (destroy IRSA before S3)
+cd irsa/s3 && terragrunt destroy
 cd s3 && terragrunt destroy
+cd ecr && terragrunt destroy
 ```
 
 ## Configuration

@@ -6,7 +6,7 @@ remote_state {
   backend = "s3"
   config  = {
     bucket = "terrapod-api-dev-tfstate"
-    key    = "terraform.tfstate"
+    key    = "ecr/terraform.tfstate"
     region = "us-east-1"
   }
   generate = {

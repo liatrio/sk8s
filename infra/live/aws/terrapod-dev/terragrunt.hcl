@@ -2,8 +2,9 @@
 # This directory contains infrastructure for the terrapod-dev environment
 #
 # Subdirectories:
-# - ecr/  : Elastic Container Registry for Docker images
-# - s3/   : S3 bucket for data storage
+# - ecr/        : Elastic Container Registry for Docker images
+# - s3/         : S3 bucket for data storage
+# - irsa/s3/    : IAM Role for Service Account (S3 access)
 #
 # To deploy all resources:
 #   terragrunt run-all plan
@@ -12,6 +13,7 @@
 # To deploy individual resources:
 #   cd ecr && terragrunt apply
 #   cd s3 && terragrunt apply
+#   cd irsa/s3 && terragrunt apply
 
 locals {
   environment = "Development"
