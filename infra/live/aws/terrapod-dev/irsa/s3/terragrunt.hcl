@@ -50,6 +50,6 @@ inputs = {
     "Project"     = "Terrapod"
     "Environment" = "Development"
     "ManagedBy"   = "Terragrunt"
-    "Component"   = "IRSA-S3-Viewer"
+    "Component"   = "IRSA-S3"
   }
 }
